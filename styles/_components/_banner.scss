@@ -1,0 +1,223 @@
+.attention-banner-container {
+  width: 100vw;
+  max-width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #caeb70;
+  padding: 10px;
+
+  @media screen and (max-width: 600px) {
+    height: fit-content
+  }
+
+  .attention-banner-icon {
+    height: 17px;
+    margin-right: 12px;
+  }
+
+  .attention-banner-text {
+    font-weight: 500;
+    font-size: 16px;
+    color: #20253b;
+
+    @media screen and (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+
+  .banner-close {
+    position: absolute;
+    right: 25px;
+    top: 18px;
+    color: #20253b;
+  }
+}
+
+.ukraine-banner-container-wrapper {
+  // padding: 0px 67px;
+  display: flex;
+  justify-content: flex-end;
+  width: 400px;
+  height: 129px;
+
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+
+  cursor: pointer;
+
+  a {
+    display: inline-block;
+    width: 100%;
+    color: #fff;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: calc(100% - 40px);
+    height: 105px;
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .ukraine-banner-close {
+    position: absolute;
+    margin-right: 10px;
+    margin-top: 10px;
+    color: #fff;
+    width: 25px;
+    height: 25px;
+    z-index: 500;
+
+    svg {
+      width: 25px;
+      height: 25px;
+    }
+  }
+
+  .ukraine-banner-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    
+    background: #4B72AC;
+    border-radius: 11px;
+    color: #fff;
+
+    background-image: url('/assets/ukraine.png');
+    background-position: right center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    @media screen and (max-width: 768px) {
+      width: 100%;
+      border-radius: 7px;
+    }
+  }
+
+  // .ukraine-icon {
+  //   height: 80%;
+  //   -webkit-transform: scaleX(-1);
+  //   transform: scaleX(-1);
+
+  //   @media screen and (max-width: 425px) {
+  //     height: 80%;
+  //   }
+  // }
+
+  .banner-content {
+    width: 253px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 24px;
+
+    @media screen and (max-width: 375px) {
+      width: 220px;
+    }
+
+    @media screen and (max-width: 350px) {
+      width: 190px;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 24px;
+      margin: 0px;
+
+      @media screen and (max-width: 425px) {
+        font-size: 16px;
+      }
+    }
+
+    .content {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 21px;
+      margin: 0;
+      margin-top: 8px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 12px;
+        line-height: 15px;
+      }
+    }
+
+    .donate {
+      color: #efce2b;
+    }
+  }
+}
+
+.defi-banner-container {
+  width: calc(50% - 14px);
+  max-width: 560px;
+  background: #313650;
+  border-radius: 11px;
+  height: 123px;
+  display: flex;
+  align-items: center;
+
+  @media screen and (max-width: 768px) {
+    width: 100vw;
+    max-width: 100%;
+  }
+
+  @media screen and (max-width: 500px) {
+    margin-top: 40px;
+  }
+
+  @media screen and (max-width: 425px) {
+    height: 75px;
+    margin-top: 40px;
+  }
+
+  .defi-banner-defi {
+    height: 43.7px;
+    margin-left: 63px;
+
+    @media screen and (max-width: 1200px) {
+      // height: 23.7px;
+      margin-left: 43px;
+    }
+
+    @media screen and (max-width: 1024px) {
+      // height: 23.7px;
+      margin-left: 23px;
+    }
+
+    @media screen and (max-width: 425px) {
+      height: 23.7px;
+      margin-left: 10px;
+    }
+  }
+
+  .defi-banner-text {
+    font-size: 18.8413px;
+    line-height: 25px;
+    color: #ffffff;
+    padding-left: 14px;
+    display: inline-block;
+    flex: 1;
+
+    @media screen and (max-width: 425px) {
+      font-size: 12px;
+      line-height: 13px;
+    }
+  }
+
+  .defi-banner-bear {
+    height: 130px;
+    margin-bottom: 7px;
+    justify-self: flex-end;
+    margin-right: 10px;
+
+    @media screen and (max-width: 425px) {
+      height: 75px;
+      margin-bottom: 0px;
+    }
+  }
+}

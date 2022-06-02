@@ -1,0 +1,279 @@
+.liquidity-container {
+  width: 100%;
+  max-width: 925px;
+  margin: 100px auto 0px;
+  display: flex;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 30px;
+  }
+
+  .liquidity-view-wrapper {
+    width: 100%;
+    background: #262b43;
+    border-radius: 30px;
+
+    &.deposit-confirm {
+      max-width: 546px;
+      margin: 0px auto;
+    }
+
+    &.manage-liquidity {
+      max-width: 546px;
+      margin: 0px auto;
+    }
+
+    &.withdraw-confirm {
+      max-width: 546px;
+      margin: 0px auto;
+    }
+
+    .view-header {
+      width: 100%;
+      background: #ffffff;
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+      height: 38px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      line-height: 21px;
+
+      img {
+        height: 11px;
+        margin-right: 10px;
+      }
+    }
+
+    .view-navigator {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: #ffffff;
+      padding: 35px 54px 0px;
+
+      .nav-button {
+        cursor: pointer;
+        height: 25px;
+      }
+
+      .nav-text {
+        flex: 1;
+        text-align: center;
+      }
+    }
+
+    .view-help {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 18px;
+      color: #fff;
+      width: 100%;
+      max-width: 312px;
+
+      &-text {
+        display: flex;
+        align-items: center;
+        margin-bottom: 3px;
+
+        img {
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .view-footer {
+      width: 100%;
+      height: 75px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      background: #313650;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 24px;
+      color: #60699e;
+      cursor: pointer;
+
+      &.success {
+        background: #37fad3;
+        color: #20253b;
+      }
+    }
+
+    .view-subtitle {
+      font-weight: 500;
+      font-size: 16px;
+      color: #ffffff;
+      line-height: 21px;
+      margin-top: 25px;
+      margin-bottom: 25px;
+    }
+  }
+
+  .liquidation-view-content {
+    width: 100%;
+    padding: 38px 22px;
+  }
+
+  .main-liquidity-container {
+    width: 100%;
+    height: 574px;
+    max-width: 285px;
+    position: relative;
+    margin-right: 92px;
+  }
+
+  .deposit-liquidity-container {
+    flex: 1;
+    height: 574px;
+  }
+
+  .my-liquidity-panel {
+    margin: 0px 32px 46px;
+    background: #313650;
+    border-radius: 30px;
+    padding: 30px 43px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .panel-title {
+      color: #b6b2ef;
+      text-align: center;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 22px;
+    }
+
+    .panel-value {
+      color: #f7fcfb;
+      font-weight: 700;
+      font-size: 30px;
+      margin-top: 6px;
+    }
+
+    .panel-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+
+      .panel-button {
+        height: 32px;
+        width: calc(50% - 5px);
+        color: #313650;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 17px;
+        background: #b6b2ef;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .section-view {
+    width: 100%;
+    background: #313650;
+    border-radius: 20px;
+    padding: 24px;
+
+    &-title {
+      color: #b6b2ef;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 13px;
+    }
+
+    &-short {
+      font-weight: 500;
+      font-size: 16px;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 13px;
+    }
+
+    &-text {
+      font-weight: 700;
+      font-size: 30px;
+      color: #f7fcfb;
+      text-align: center;
+      margin-bottom: 13px;
+    }
+
+    &-button {
+      width: 100%;
+      background: #b6b2ef;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 500;
+      font-size: 14px;
+      color: #262b43;
+      padding: 5px 0px;
+    }
+  }
+
+  .liquidity-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  .withdraw-confirm {
+    .selected-token-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 40px;
+      background: #313650;
+      width: 100%;
+      max-width: 193px;
+      height: 80px;
+
+      &.border {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+
+      .selected-token-icon {
+        height: 30px;
+      }
+
+      .selected-token-arrow {
+        height: 16px;
+      }
+
+      .selected-token-symbol {
+        font-weight: 700;
+        font-size: 30px;
+        color: #fff;
+        padding: 0px 10px;
+      }
+    }
+
+    .token-list-wrapper {
+      margin-top: 323px;
+      margin-left: 3px;
+    }
+  }
+}

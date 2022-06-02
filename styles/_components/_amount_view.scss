@@ -1,0 +1,113 @@
+.amount-view-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  background: #313650;
+  border-radius: 35px;
+
+  &.kujira {
+    background: #323843;
+  }
+
+  @media screen and (max-width: 768px) {
+    height: 38.81px;
+    border-radius: 29px;
+  }
+
+  &.vertical {
+    flex-direction: column;
+    height: 110px;
+    border-radius: 55px;
+    margin-bottom: 23px;
+
+    @media screen and (max-width: 768px) {
+      height: 75.03px;
+      border-radius: 54.6874px;
+      margin-left: 44px;
+      margin-right: 44px;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  &.background {
+    background-image: url("/assets/wave.png");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+
+    @media screen and (max-width: 768px) {
+      background-position: center bottom;
+      background-size: 100% 50px;
+    }
+  }
+
+  .amount-view-label {
+    color: #b6b2ef;
+    font-weight: 500;
+    font-size: 16px;
+    width: 100px;
+    text-align: center;
+
+    &.kujira {
+      color: #D3483E;
+    }
+
+    @media screen and (max-width: 768px) {
+      font-size: 13px;
+    }
+  }
+
+  .amount-view-value {
+    font-weight: bold;
+    font-size: 30px;
+    color: #f7fcfb;
+    padding-left: 14px;
+
+    @media screen and (max-width: 768px) {
+      font-size: 16px;
+      padding-left: 4px;
+    }
+
+    &.highlight {
+      // color: #37fad3;
+      color: #fff;
+    }
+
+    &.vertical {
+      padding-top: 10px;
+
+      @media screen and (max-width: 768px) {
+        padding-top: 5px;
+      }
+    }
+  }
+
+  .amount-view-icon {
+    height: 30px;
+    margin-left: 9px;
+    margin-right: 5px;
+
+    @media screen and (max-width: 768px) {
+      height: 31.07px;
+    }
+  }
+
+  .amount-edit-button {
+    width: 39px;
+    height: 21px;
+    background: #b6b2ef;
+    border-radius: 34px;
+    color: #262b43;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+  }
+}

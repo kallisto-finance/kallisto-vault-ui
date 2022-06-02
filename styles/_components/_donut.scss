@@ -1,0 +1,62 @@
+.donut-chart-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 28px 0px;
+
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+  }
+
+  .donut-chart-section {
+    width: calc(50% - 14px);
+
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+    }
+
+  }
+
+  .donut-chart-description {
+    width: calc(50% - 14px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    // padding: 10px 0px;
+
+    @media screen and (max-width: 1024px) {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .donut-chart-row {
+      width: 100%;
+      display: flex;
+
+      @media screen and (max-width: 1024px) {
+        margin-bottom: 10px;
+      }
+    }
+
+    .donut-chart-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      margin-right: 15px;
+    }
+
+    .donut-chart-value {
+      .title {
+        font-weight: 500;
+        font-size: 13px;
+      }
+
+      .value {
+        font-weight: 700;
+        font-size: 16px;
+        color: #ffffff;
+        margin-top: 4px;
+      }
+    }
+  }
+}

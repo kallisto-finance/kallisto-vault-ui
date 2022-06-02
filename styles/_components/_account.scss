@@ -1,0 +1,215 @@
+.connnect-wallet-button-container {
+  display: block;
+  width: 179px;
+  @media screen and (max-width: 768px) {
+    width: 200px;
+  }
+
+  @media screen and (max-width: 500px) {
+    width: 100%;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  .wallet-button {
+    width: 100%;
+    height: 35px;
+    padding: 8px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+
+    @media screen and (max-width: 768px) {
+      font-size: 16px;
+      height: 35px;
+    }
+
+    @media screen and (max-width: 500px) {
+      font-size: 16px;
+      height: 30px;
+    }
+  }
+
+  .not-connected {
+    background: #37fad3;
+    color: #20253b;
+  }
+
+  .connected {
+    background: #262b43;
+    border: 1px solid #37fad3;
+    box-shadow: 1px 1px 20px rgba(255, 134, 0, 0.1);
+    color: #37fad3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 179px;
+    position: absolute;
+
+    z-index: 400;
+
+    @media screen and (max-width: 768px) {
+      width: 200px;
+    }
+
+    @media screen and (max-width: 500px) {
+      width: calc(100% - 66px);
+    }
+  }
+
+  img {
+    height: 34px;
+    margin-left: 15px;
+
+    @media screen and (max-width: 768px) {
+      height: 14px;
+      margin-left: 8px;
+    }
+  }
+
+  .wallet-info {
+    position: absolute;
+    width: 179px;
+    padding: 10px 0px 0px;
+    border-top: none;
+    border-bottom-left-radius: 13px;
+    border-bottom-right-radius: 13px;
+    color: #20253b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #20253b;
+    margin-top: 23px;
+    transition: all 0.3s ease-out;
+    border: 0.8px solid #313650;
+
+    @media screen and (max-width: 768px) {
+      width: 200px;
+      padding: 0px;
+    }
+
+    @media screen and (max-width: 500px) {
+      width: 100vw;
+      max-width: 100%;
+      position: fixed;
+      left: 0px;
+      bottom: 0px;
+      padding: 0px;
+      border-top-left-radius: 17px;
+      border-top-right-radius: 17px;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+      animation: walletInfoSlideUp 0.2s;
+      // transition: 0.5s ease-in-out;
+      // top: calc(100vh - 239px);
+    }
+
+    z-index: 300;
+
+    &-address {
+      display: flex;
+      margin-top: 20px;
+      width: 100%;
+      padding: 0px 12px;
+      justify-content: space-between;
+      align-items: center;
+
+      @media screen and (max-width: 768px) {
+        padding: 0px 10px;
+      }
+
+      @media screen and (max-width: 500px) {
+        padding: 0px 27px;
+      }
+
+      .circle {
+        height: 12px;
+      }
+
+      .address {
+        flex: 1;
+        font-weight: 500;
+        font-size: 12px;
+        color: #fff;
+        padding-left: 5px;
+
+        @media screen and (max-width: 768px) {
+          padding-left: 5px;
+        }
+      }
+
+      .copy-icon {
+        width: 20px;
+        height: 20px;
+        margin-left: 0px;
+        cursor: pointer;
+      }
+    }
+
+    &-type {
+      font-size: 10px;
+      color: #fff;
+      padding-left: 30px;
+      margin-top: 3px;
+    }
+
+    &-divider {
+      background: #313650;
+      width: 100%;
+      height: 1px;
+      margin: 10px 0px;
+    }
+
+    &-button {
+      width: 100%;
+      padding: 0px 12px;
+      font-size: 12px;
+      line-height: 16px;
+      color: #b6b2ef;
+      margin-bottom: 5px;
+      cursor: pointer;
+
+      img {
+        height: 9px;
+        margin-right: 8px;
+      }
+    }
+
+    .wallet-disconnect-button {
+      background: #B6B2EF;
+      border-bottom-left-radius: 13px;
+      border-bottom-right-radius: 13px;
+      height: 38px;
+      width: 100%;
+      color: #20253b;
+      font-weight: 500;
+      font-size: 12px;
+      border: none;
+      outline: none;
+      margin-top: 16px;
+
+      @media screen and (max-width: 500px) {
+        border-radius: 40px;
+        height: 30px;
+        width: calc(100% - 54px);
+        margin-left: 27px;
+        margin-right: 27px;
+        margin-bottom: 38px;
+      }
+    }
+  }
+}
+
+@keyframes walletInfoSlideUp {
+  0% {
+    bottom: -239px;
+  }
+  100% {
+    bottom: 0px;
+  }
+}
