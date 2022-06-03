@@ -11,7 +11,12 @@ const ConnectionMask = ({ className = "" }) => {
 
   return account ? null : (
     <div className={cn("connection-mask-container", className)}>
-      <img src="/assets/kallistos/kallisto-apy-chaser.svg" />
+      <img src="/assets/kallistos/curve-apy-chaser.png" />
+      <div className="mask-description">
+        <span className="text1">Curve</span>
+        <span className="text2">APY Chaser</span>
+        <span className="text3">Chases the highest paying low risk Curve pool in a cost effective way.</span>
+      </div>
       <ConnectWalletButton className="connect-wallet-button" />
     </div>
   );
