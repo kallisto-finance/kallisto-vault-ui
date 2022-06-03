@@ -73,11 +73,7 @@ const WithdrawConfirm = ({
           )}
         </div>
         <div className="view-subtitle">Amount available</div>
-        <AmountView
-          icon="/assets/tokens/ETH.png"
-          value={`$100`}
-          iconBack={true}
-        />
+        <AmountView value={`$100`} />
         <div className="view-subtitle">Amount to withdraw</div>
         <WithdrawAmountInput
           myCap={new BigNumber(100000)}
