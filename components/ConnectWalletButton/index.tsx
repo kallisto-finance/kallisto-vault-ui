@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { useWallet } from "hooks/useWallet";
+import { useWallet, useOutsideAlerter } from "hooks";
 
 import Button from "components/Button";
-import { ModalContainer, ModalSelectWallet } from "components/Modal";
 
 import { getWalletAddressEllipsis } from "utils/common";
-import { useOutsideAlerter } from "hooks";
 
 import cn from "classnames";
 import mixpanel from "mixpanel-browser";
@@ -16,13 +13,7 @@ import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const ConnectWalletButton = ({ className = "", children = null }) => {
-  const {
-    wallet,
-    connectMetaMask,
-    connectWalletConnect,
-    disconnectWallet,
-    availableProviders,
-  } = useWallet();
+  const { wallet, openConnectionModal, disconnectWallet } = useWallet();
   const account = wallet?.account;
 
   const [copied, setCopied] = useState(false);
@@ -35,27 +26,12 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
     }
   }, [copied]);
 
-  const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
   const [showWalletInfo, setShowWalletInfo] = useState(false);
 
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, () => {
     setShowWalletInfo(false);
   });
-
-  const handleConnectMetamask = async () => {
-    try {
-      await connectMetaMask();
-      setShowChooseWalletModal(false);
-    } catch (e) {}
-  };
-
-  const handleConnectWalletConnect = async () => {
-    try {
-      await connectWalletConnect();
-      setShowChooseWalletModal(false);
-    } catch (e) {}
-  };
 
   return (
     <div
@@ -66,7 +42,7 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
         (children ? (
           <div
             onClick={(e) => {
-              setShowChooseWalletModal(true);
+              openConnectionModal();
             }}
             style={{ cursor: "pointer", width: "100%" }}
           >
@@ -75,7 +51,7 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
         ) : (
           <Button
             className="wallet-button not-connected"
-            onClick={(e) => setShowChooseWalletModal(true)}
+            onClick={(e) => openConnectionModal()}
           >
             Connect Wallet
           </Button>
@@ -126,14 +102,6 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
             </div>
           )}
         </>
-      )}
-      {showChooseWalletModal && (
-        <ModalContainer onClose={() => setShowChooseWalletModal(false)}>
-          <ModalSelectWallet
-            onChooseMetamask={() => handleConnectMetamask()}
-            onChooseWalletConnect={() => handleConnectWalletConnect()}
-          />
-        </ModalContainer>
       )}
     </div>
   );

@@ -2,22 +2,15 @@ export type TMap = {
   [key: string]: any;
 };
 
-export type EthNetwork = 'mainnet' | 'rinkeby' | 'goerli' | 'ropsten' | 'kovan';
-export type NetworkIds = '1' | '4' | '5' | '3' | '42';
-export type Provider = 'metamask' | 'walletconnect';
+export type EthNetwork = "mainnet" | "rinkeby" | "goerli" | "ropsten" | "kovan";
+export type NetworkIds = "1" | "4" | "5" | "3" | "42";
+export type Provider = "metamask" | "walletconnect";
 export interface Wallet {
-    account: string | null;
-    providerName: Provider | null;
-    provider: any | null;
-    network: NetworkIds | null;
+  account: string | null;
+  providerName: Provider | null;
+  provider: any | null;
+  network: NetworkIds | null;
 }
-
-
-
-
-
-
-
 
 export type LIQUIDITY_BUTTON_STATUS =
   | "success"
@@ -48,4 +41,3 @@ export type TRANSACTION_STATUS =
   | "Timeout"
   | "Unspecified Error"
   | "Unknown Error";
-

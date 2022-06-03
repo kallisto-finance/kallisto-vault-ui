@@ -6,9 +6,11 @@ import {
   createContext,
   useContext,
 } from "react";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
+
+import { ModalContainer, ModalSelectWallet } from "components/Modal";
 
 const cookies = new Cookies();
 
@@ -25,6 +27,7 @@ type WalletContextType = {
   connectMetaMask: () => Promise<void>;
   connectWalletConnect: () => Promise<void>;
   disconnectWallet: () => void;
+  openConnectionModal: () => void;
   error: Error | null;
   availableProviders: { [providerName in Provider]: boolean };
 };
@@ -246,6 +249,26 @@ export const WalletProvider = ({
     }
   }, [wallet]);
 
+  const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
+
+  const handleConnectMetamask = async () => {
+    try {
+      await connectMetaMask();
+      setShowChooseWalletModal(false);
+    } catch (e) {}
+  };
+
+  const handleConnectWalletConnect = async () => {
+    try {
+      await connectWalletConnect();
+      setShowChooseWalletModal(false);
+    } catch (e) {}
+  };
+
+  const openConnectionModal = () => {
+    setShowChooseWalletModal(true);
+  }
+
   return (
     <WalletContext.Provider
       value={{
@@ -254,11 +277,22 @@ export const WalletProvider = ({
         connectMetaMask,
         connectWalletConnect,
         disconnectWallet,
+        openConnectionModal,
         availableProviders,
         error,
       }}
     >
-      {children}
+      <>
+        {children}
+        {showChooseWalletModal && (
+          <ModalContainer onClose={() => setShowChooseWalletModal(false)}>
+            <ModalSelectWallet
+              onChooseMetamask={() => handleConnectMetamask()}
+              onChooseWalletConnect={() => handleConnectWalletConnect()}
+            />
+          </ModalContainer>
+        )}
+      </>
     </WalletContext.Provider>
   );
 };
