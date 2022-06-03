@@ -78,7 +78,7 @@ const DepositPoolContent = (props) => {
           className="mt-2"
         />
         <AmountView label="Total Value Locked" value="$6,946.19" className="mt-2" />
-        <div className="view-subtitle">Add more Liquidity</div>
+        <div className="view-subtitle">Select a token and add more liquidity</div>
         <DepositAmountInput
           maxBalance={ustBalance}
           balance={balance}
