@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from "react-tooltip";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
@@ -19,8 +19,8 @@ const WithdrawAmountInput = ({
   collectType,
 }) => {
   const withdrawAmount = useMemo(() => {
-    return myCap.multipliedBy(withdrawPercentage).dividedBy(100).toFixed(0)
-  }, [myCap, withdrawPercentage])
+    return myCap.multipliedBy(withdrawPercentage).dividedBy(100).toFixed(0);
+  }, [myCap, withdrawPercentage]);
 
   return (
     <div className="withdraw-amount-input-container">
@@ -31,12 +31,14 @@ const WithdrawAmountInput = ({
             src="/assets/approx.png"
             style={{ height: 18 }}
           />
-          <span className="collect-type">{formatBalance(withdrawAmount, 2)}</span>
-          <span className="collect-type">ETH</span>
-          <img
+          <span className="collect-type">$</span>
+          <span className="collect-type">
+            {formatBalance(withdrawAmount, 2)}
+          </span>
+          {/* <img
             src="/assets/tokens/ETH.png"
             style={{ width: 31, height: 31, marginLeft: 8 }}
-          />
+          /> */}
         </div>
         <div className="amount-slider-section">
           <Slider
@@ -57,39 +59,55 @@ const WithdrawAmountInput = ({
           />
         </div>
         <div className="withdraw-percentage-selector">
-        <Button
-            className={cn("percent-selector", { selected: withdrawPercentage === 0 })}
+          <Button
+            className={cn("percent-selector", {
+              selected: withdrawPercentage === 0,
+            })}
             onClick={(e) => onChangeWithdrawPercentage(0)}
           >
             0%
           </Button>
           <Button
-            className={cn("percent-selector", { selected: withdrawPercentage === 25 })}
+            className={cn("percent-selector", {
+              selected: withdrawPercentage === 25,
+            })}
             onClick={(e) => onChangeWithdrawPercentage(25)}
           >
             25%
           </Button>
           <Button
-            className={cn("percent-selector", { selected: withdrawPercentage === 50 })}
+            className={cn("percent-selector", {
+              selected: withdrawPercentage === 50,
+            })}
             onClick={(e) => onChangeWithdrawPercentage(50)}
           >
             50%
           </Button>
           <Button
-            className={cn("percent-selector", { selected: withdrawPercentage === 75 })}
+            className={cn("percent-selector", {
+              selected: withdrawPercentage === 75,
+            })}
             onClick={(e) => onChangeWithdrawPercentage(75)}
           >
             75%
           </Button>
           <Button
-            className={cn("percent-selector", { selected: withdrawPercentage === 100 })}
+            className={cn("percent-selector", {
+              selected: withdrawPercentage === 100,
+            })}
             onClick={(e) => onChangeWithdrawPercentage(100)}
           >
             MAX
           </Button>
         </div>
       </div>
-      <ReactTooltip effect="solid" multiline={true} backgroundColor="#B6B2EF" textColor="#262B43" className="withdraw-tooltip" />
+      <ReactTooltip
+        effect="solid"
+        multiline={true}
+        backgroundColor="#B6B2EF"
+        textColor="#262B43"
+        className="withdraw-tooltip"
+      />
     </div>
   );
 };

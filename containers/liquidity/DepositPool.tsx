@@ -68,18 +68,16 @@ const DepositPoolContent = (props) => {
     <div className="liquidity-view-wrapper">
       <div className="view-header">
         <img src="/assets/active.svg" />
-        <span>
-          Active Pool since <strong>3 hrs 4 min 0 sec</strong>{" "}
-        </span>
+        <span>Active Pool</span>
       </div>
       <div className="liquidation-view-content">
         <PoolInfo />
         <AmountView
           label="7 day Volume"
-          value="6.946,19 ETH"
+          value="$6,946.19"
           className="mt-2"
         />
-        <AmountView label="Liquidity" value="6.946,19 ETH" className="mt-2" />
+        <AmountView label="Liquidity" value="$6,946.19" className="mt-2" />
         <div className="view-subtitle">Add more Liquidity</div>
         <DepositAmountInput
           maxBalance={ustBalance}

@@ -14,7 +14,7 @@ const ManageLiquidity = ({ onBack, onWithdrawLiquidity }) => {
       <div className="liquidation-view-content">
         <div className="my-liquidity-panel">
           <span className="panel-title">My Pool Liquidity</span>
-          <span className="panel-value">6.946 ETH</span>
+          <span className="panel-value">$6,946</span>
           <div className="panel-buttons">
             <div className="panel-button" onClick={(e) => onBack()}>
               Add more Liquidity

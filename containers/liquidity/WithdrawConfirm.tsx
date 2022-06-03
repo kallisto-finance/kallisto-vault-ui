@@ -75,7 +75,7 @@ const WithdrawConfirm = ({
         <div className="view-subtitle">Amount available</div>
         <AmountView
           icon="/assets/tokens/ETH.png"
-          value={`100 ETH`}
+          value={`$100`}
           iconBack={true}
         />
         <div className="view-subtitle">Amount to withdraw</div>

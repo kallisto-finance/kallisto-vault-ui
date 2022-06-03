@@ -19,7 +19,7 @@ const MainLiquidityPanel = ({ onManageLiquidity }) => {
         <div className="liquidation-view-content">
           <div className="section-view">
             <div className="section-view-title">My Pool Liquidity</div>
-            <div className="section-view-text">6.946,19 ETH</div>
+            <div className="section-view-text">$6,946.19</div>
             <div
               className="section-view-button"
               onClick={(e) => onManageLiquidity()}
