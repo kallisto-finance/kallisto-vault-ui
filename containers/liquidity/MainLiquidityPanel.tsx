@@ -1,17 +1,9 @@
-import React, { useEffect, useState } from "react";
-import BigNumber from "bignumber.js";
+import React from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-
-import { useWallet } from "hooks/useWallet";
-
-import ViewContainer from "components/ViewContainer";
 import APYChaserLogo from "components/APYChaserLogo";
 import ConnectionMask from "components/ConnectionMask";
 
-import { formatBalance } from "utils/wasm";
+import { useWallet } from "hooks";
 
 import cn from "classnames";
 

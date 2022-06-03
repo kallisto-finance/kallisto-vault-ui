@@ -2,20 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { ethers } from "ethers";
 import { useWallet } from "hooks/useWallet";
 
 import Button from "components/Button";
 import { ModalContainer, ModalSelectWallet } from "components/Modal";
 
 import { getWalletAddressEllipsis } from "utils/common";
-import { addresses } from "utils/constants";
-import { useLCDClient, useOutsideAlerter } from "hooks";
+import { useOutsideAlerter } from "hooks";
 
 import cn from "classnames";
 import mixpanel from "mixpanel-browser";
 
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const ConnectWalletButton = ({ className = "", children = null }) => {
   const {
@@ -28,12 +26,6 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
   const account = wallet?.account;
 
   const [copied, setCopied] = useState(false);
-
-  const [balance, setBalance] = useState({
-    ust: "0.0",
-    luna: "0.0",
-    bLUNA: "0.0",
-  });
 
   useEffect(() => {
     if (copied) {

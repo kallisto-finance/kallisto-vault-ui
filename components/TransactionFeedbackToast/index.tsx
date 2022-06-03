@@ -2,8 +2,6 @@ import React from "react";
 
 import { getWalletAddressEllipsis } from "utils/common";
 
-import cn from "classnames";
-
 type ToastStatus = "success" | "error";
 
 const TransactionFeedbackToast = ({

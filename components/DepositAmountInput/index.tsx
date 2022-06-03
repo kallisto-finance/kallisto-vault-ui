@@ -1,12 +1,11 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import Button from "components/Button";
-
-import { isNaN } from "utils/number";
+import TokenItem from "components/Tokens/TokenItem";
 
 import { useOutsideAlerter } from "hooks";
 
-import TokenItem from "components/Tokens/TokenItem";
+import { isNaN } from "utils/number";
 
 import { TOKENS } from "utils/constants";
 

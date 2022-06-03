@@ -5,13 +5,12 @@ import "rc-slider/assets/index.css";
 
 import Button from "components/Button";
 
-import { formatBalance } from "utils/wasm";
-import { isNaN } from "utils/number";
+import { formatBalance } from "utils/number";
 
 import cn from "classnames";
 import mixpanel from "mixpanel-browser";
 
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const WithdrawAmountInput = ({
   myCap,

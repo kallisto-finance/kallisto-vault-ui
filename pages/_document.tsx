@@ -2,7 +2,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
 import mixpanel from "mixpanel-browser";
 
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 mixpanel.track("DOCUMENT_LOAD");
 
 class MyDocument extends Document {

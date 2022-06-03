@@ -1,15 +1,13 @@
 import React, { useState, useMemo, useRef } from "react";
 import BigNumber from "bignumber.js";
 
-import ViewContainer from "components/ViewContainer";
 import AmountView from "components/AmountView";
 import WithdrawAmountInput from "components/WithdrawAmountInput";
 import LiquidityButton from "components/LiquidityButton";
 import { LoadingSpinner } from "components/LoadingIcon";
 import TokenItem from "components/Tokens/TokenItem";
 
-import { formatBalance } from "utils/wasm";
-import { compare } from "utils/number";
+import { compare, formatBalance } from "utils/number";
 import { COLLECT_TYPE, LIQUIDITY_BALANCE_STATUS } from "types";
 import { useOutsideAlerter } from "hooks";
 import { TOKENS } from "utils/constants";
@@ -17,7 +15,7 @@ import { TOKENS } from "utils/constants";
 import cn from "classnames";
 
 import mixpanel from "mixpanel-browser";
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const WithdrawConfirm = ({
   onBack,

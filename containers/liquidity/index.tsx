@@ -1,38 +1,20 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import BigNumber from "bignumber.js";
-import { toast } from "react-toastify";
-
-import { ethers } from "ethers";
-import { useWallet } from "hooks/useWallet";
 
 import MainLiquidityPanel from "./MainLiquidityPanel";
 import ManageLiquidity from "./ManageLiquidity";
 import DepositPool from "./DepositPool";
 import DepositConfirm from "./DepositConfirm";
 import WithdrawConfirm from "./WithdrawConfirm";
-import TransactionFeedbackToast from "components/TransactionFeedbackToast";
-import { UkraineBanner } from "components/Banner";
-import ConnectionMask from "components/ConnectionMask";
 
-import { useLCDClient, usePool } from "hooks";
-import { formatBalance } from "utils/wasm";
 import { moveScrollToTop } from "utils/document";
-import { delay } from "utils/date";
-import { addresses } from "utils/constants";
-import { compare } from "utils/number";
-
-import cn from "classnames";
 
 import mixpanel from "mixpanel-browser";
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 let valueLoadingProgressBarInterval = null;
 
-const Liquidity = () => {
-  const { wallet } = useWallet();
-  const account = wallet?.account;
-
+const Liquidity = ({ router }) => {
   const getQueryParam = (url, param) => {
     // Expects a raw URL
     param = param.replace(/[[]/, "[").replace(/[]]/, "]");
@@ -56,7 +38,6 @@ const Liquidity = () => {
       params = {},
       first_params = {},
       index;
-    const router = useRouter();
     //console.log(router.asPath)
 
     for (index = 0; index < campaign_keywords.length; ++index) {

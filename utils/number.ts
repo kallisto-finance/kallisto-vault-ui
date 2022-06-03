@@ -79,3 +79,21 @@ export const allowOnlyNumber = (value) => {
 
   return re.test(value);
 };
+
+export const formatBalance = (value, fixed = 3, decimals = 6) => {
+  const balance = new BigNumber(value)
+    .div(10 ** decimals)
+    .toFormat(fixed)
+    .toString();
+
+  return balance;
+};
+
+export const toBalance = (value, fixed = 3, decimals = 6) => {
+  const balance = new BigNumber(value)
+    .div(10 ** decimals)
+    .toFixed(fixed)
+    .toString();
+
+  return balance;
+};

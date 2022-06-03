@@ -1,5 +1,4 @@
-import useLCDClient from './useLCDClient'
-import usePool from './usePool'
 import useOutsideAlerter from './useOutsideAlerter'
+import { useWallet } from './useWallet'
 
-export { useLCDClient, usePool, useOutsideAlerter };
+export { useWallet, useOutsideAlerter };

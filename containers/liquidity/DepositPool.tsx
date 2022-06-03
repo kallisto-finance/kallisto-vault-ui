@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 
 import { useWallet } from "hooks/useWallet";
 
-import ViewContainer from "components/ViewContainer";
 import AmountView from "components/AmountView";
 import DepositAmountInput from "components/DepositAmountInput";
 import LiquidityButton from "components/LiquidityButton";
@@ -12,12 +11,11 @@ import PoolInfo from "components/PoolInfo";
 import { LIQUIDITY_BALANCE_STATUS } from "types";
 
 import { isNaN, compare } from "utils/number";
-import { formatBalance } from "utils/wasm";
 import mixpanel from "mixpanel-browser";
 
 import cn from "classnames";
 
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const DepositPoolContent = (props) => {
   const {

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import BigNumber from "bignumber.js";
 
-import ViewContainer from "components/ViewContainer";
 import Button from "components/Button";
 import AmountView from "components/AmountView";
 import { LoadingSpinner } from "components/LoadingIcon";
@@ -11,7 +10,7 @@ import { isNaN } from "utils/number";
 import cn from "classnames";
 import mixpanel from "mixpanel-browser";
 
-mixpanel.init("f5f9ce712e36f5677629c9059c20f3dc");
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const DepositConfirm = ({
   // pool,

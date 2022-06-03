@@ -1,22 +1,12 @@
 const { withSentryConfig } = require('@sentry/nextjs');
 
-// module.exports = {
-//   trailingSlash: true,
-//   env: {
-//     STORYBLOK_ACCESS_TOKEN: process.env.STORYBLOK_ACCESS_TOKEN,
-//     LIQUIDITY_CONTRACT: process.env.LIQUIDITY_CONTRACT,
-//   },
-// }
-
 const moduleExports = {
   trailingSlash: true,
   env: {
     STORYBLOK_ACCESS_TOKEN: process.env.STORYBLOK_ACCESS_TOKEN,
     INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
-    LIQUIDITY_CONTRACT: process.env.LIQUIDITY_CONTRACT,
-    KUJIRA_AUST_VAULT: process.env.KUJIRA_AUST_VAULT,
-    LIQUIDITY_APY: process.env.LIQUIDITY_APY,
-    KUJIRA_AUST_APY: process.env.KUJIRA_AUST_APY
+    MIXPANEL_API_KEY: process.env.MIXPANEL_API_KEY,
+    KALLISTO_VAULT_ADDRESS: process.env.KALLISTO_VAULT_ADDRESS
   },
 };
 
