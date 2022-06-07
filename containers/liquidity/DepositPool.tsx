@@ -10,7 +10,7 @@ import PoolInfo from "components/PoolInfo";
 
 import { LIQUIDITY_BALANCE_STATUS } from "types";
 
-import { isNaN, compare } from "utils/number";
+import { isNaN, compare, formatBalance, toBalance } from "utils/number";
 import mixpanel from "mixpanel-browser";
 
 import cn from "classnames";
@@ -19,50 +19,45 @@ mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const DepositPoolContent = (props) => {
   const {
-    pool,
+    vaultInfo,
+    selectedToken,
+    tokenBalances,
+    onSelectToken,
     onDeposit,
-    ustBalance,
-    balance,
+    depositAmount,
     volume,
     onChangeDepositInputAmount,
   } = props;
 
   const [depositChecked, setDepositChecked] = useState(false);
 
-  const liquidityButtonStatus = useMemo((): LIQUIDITY_BALANCE_STATUS => {
-    if (isNaN(balance)) {
-      return {
-        status: "enter_amount",
-        text: "Enter an amount",
-      };
-    }
+  // const liquidityButtonStatus = useMemo((): LIQUIDITY_BALANCE_STATUS => {
+  //   if (isNaN(balance)) {
+  //     return {
+  //       status: "enter_amount",
+  //       text: "Enter an amount",
+  //     };
+  //   }
 
-    if (compare(balance, 0) === 0) {
-      return {
-        status: "enter_amount",
-        text: "Enter an amount",
-      };
-    }
+  //   if (compare(balance, 0) === 0) {
+  //     return {
+  //       status: "enter_amount",
+  //       text: "Enter an amount",
+  //     };
+  //   }
 
-    if (compare(balance, ustBalance) === 1) {
-      return {
-        status: "insufficient",
-        text: "Insufficient Balance",
-      };
-    }
+  //   if (!depositChecked) {
+  //     return {
+  //       status: "enter_amount",
+  //       text: "Deposit UST",
+  //     };
+  //   }
 
-    if (!depositChecked) {
-      return {
-        status: "enter_amount",
-        text: "Deposit UST",
-      };
-    }
-
-    return {
-      status: "success",
-      text: "Deposit UST",
-    };
-  }, [balance, ustBalance, depositChecked]);
+  //   return {
+  //     status: "success",
+  //     text: "Deposit UST",
+  //   };
+  // }, [balance, depositChecked]);
 
   return (
     <div className="liquidity-view-wrapper">
@@ -71,17 +66,19 @@ const DepositPoolContent = (props) => {
         <span>Active Pool</span>
       </div>
       <div className="liquidation-view-content">
-        <PoolInfo />
-        <AmountView
+        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={vaultInfo.apy} />
+        {/* <AmountView
           label="7 day Volume"
-          value="$6,946.19"
+          value="$0"
           className="mt-2"
-        />
-        <AmountView label="Total Value Locked" value="$6,946.19" className="mt-2" />
+        /> */}
+        <AmountView label="Total Value Locked" value={`$${formatBalance(vaultInfo.tvl)}`} className="mt-2" />
         <div className="view-subtitle">Select a token and add more liquidity</div>
         <DepositAmountInput
-          maxBalance={ustBalance}
-          balance={balance}
+          selectedToken={selectedToken}
+          tokenBalances={tokenBalances}
+          depositAmount={depositAmount}
+          onSelectToken={(token) => onSelectToken(token)}
           onChangeDepositInputAmount={(value) =>
             onChangeDepositInputAmount(value)
           }

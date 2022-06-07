@@ -134,6 +134,14 @@
     height: 574px;
   }
 
+  .deposit-pool-loading-wrapper {
+    flex: 1;
+    height: 574px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .my-liquidity-panel {
     margin: 0px 32px 46px;
     background: #313650;

@@ -7,7 +7,7 @@ import LiquidityButton from "components/LiquidityButton";
 import { LoadingSpinner } from "components/LoadingIcon";
 import TokenItem from "components/Tokens/TokenItem";
 
-import { compare, formatBalance } from "utils/number";
+import { compare, formatBalance, getBalanceFromTokenList } from "utils/number";
 import { COLLECT_TYPE, LIQUIDITY_BALANCE_STATUS } from "types";
 import { useOutsideAlerter } from "hooks";
 import { TOKENS } from "utils/constants";
@@ -18,21 +18,21 @@ import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const WithdrawConfirm = ({
-  onBack,
+  vaultInfo,
+  tokenBalances,
   withdrawPercentage,
+  selectedToken,
+  onSelectToken,
+  onBack,
   onChangeWithdrawPercentage,
   onConfirmWithdraw,
   loading,
 }) => {
-  const [collectType, setCollectType] = useState<COLLECT_TYPE>("UST");
-
   const [showTokenList, setShowTokenList] = useState(false);
   const tokenListRef = useRef(null);
   useOutsideAlerter(tokenListRef, () => {
     setShowTokenList(false);
   });
-
-  const [selectedTokenIndex, setSelectedTokenIndex] = useState(0);
 
   return (
     <div className="liquidity-view-wrapper withdraw-confirm">
@@ -51,13 +51,8 @@ const WithdrawConfirm = ({
           onClick={(e) => setShowTokenList(!showTokenList)}
           ref={tokenListRef}
         >
-          <img
-            className="selected-token-icon"
-            src={TOKENS[selectedTokenIndex].img}
-          />
-          <span className="selected-token-symbol">
-            {TOKENS[selectedTokenIndex].name}
-          </span>
+          <img className="selected-token-icon" src={selectedToken.img} />
+          <span className="selected-token-symbol">{selectedToken.name}</span>
           <img
             className="selected-token-arrow"
             src="/assets/arrows/arrow-down.svg"
@@ -65,23 +60,34 @@ const WithdrawConfirm = ({
           {showTokenList && (
             <div className="token-list-wrapper">
               <div className="token-list-scroll-view">
-                {TOKENS.map((token) => (
-                  <TokenItem token={token} balance="123.3" />
-                ))}
+                {TOKENS.map((token) =>
+                  token.address.toLowerCase() ===
+                  selectedToken.address.toLowerCase() ? null : (
+                    <TokenItem
+                      token={token}
+                      balance={formatBalance(
+                        getBalanceFromTokenList(token.address, tokenBalances),
+                        4,
+                        token.decimals
+                      )}
+                      onSelectToken={(token) => onSelectToken(token)}
+                      key={`withdraw-token-list-${token.symbol}`}
+                    />
+                  )
+                )}
               </div>
             </div>
           )}
         </div>
         <div className="view-subtitle">Amount available</div>
-        <AmountView value={`$100`} />
+        <AmountView value={`$ ${formatBalance(vaultInfo.userLiquidity)}`} />
         <div className="view-subtitle">Amount to withdraw</div>
         <WithdrawAmountInput
-          myCap={new BigNumber(100000)}
+          myCap={vaultInfo.userLiquidity}
           withdrawPercentage={withdrawPercentage}
           onChangeWithdrawPercentage={(value) =>
             onChangeWithdrawPercentage(value)
           }
-          collectType={collectType}
         />
       </div>
       <div

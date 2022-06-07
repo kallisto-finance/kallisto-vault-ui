@@ -1,7 +1,5 @@
 import axios from "axios";
 
-import { addresses } from "./constants";
-
 const axiosClient = () => {
   const client = axios.create();
 
