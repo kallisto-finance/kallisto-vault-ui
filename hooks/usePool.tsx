@@ -296,12 +296,12 @@ const usePool = () => {
 
     // calculate expected balance
     // expected balance = [expected lp balance] * [vault lp balance] / [total supply] * [slippage]
-    const expectedBalance = new BigNumber(expectedLpTokenAmount.toString())
+    const expectedBalanceTemp = new BigNumber(expectedLpTokenAmount.toString())
       .multipliedBy(new BigNumber(vaultLPBalance.toString()))
       .dividedBy(new BigNumber(totalSupply.toString()))
       .multipliedBy(SLIPPAGE)
-      .multipliedBy(10 ** vaultInfo.mainLPDecimals)
       .decimalPlaces(0);
+    const expectedBalance = ethers.utils.parseUnits(expectedBalanceTemp.toString(), vaultInfo.mainLPDecimals)
     console.log("expectedBalance", expectedBalance.toString());
 
     /**
@@ -324,7 +324,7 @@ const usePool = () => {
         ethers.BigNumber.from(depositAmount.value.toString()),
         mainUnderlyingTokenIndex,
         swapRoute,
-        ethers.BigNumber.from(expectedBalance.toString()),
+        expectedBalance.toString(),
         {
           value:
             depositToken.address === VETH
