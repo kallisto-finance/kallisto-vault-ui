@@ -257,8 +257,10 @@ const usePool = () => {
     );
 
     console.log(vaultInfo.underlyingCoins, mainToken, mainUnderlyingTokenIndex);
+    
+    const amount = new BigNumber(depositAmount.value.toString()).dividedBy(new BigNumber(10 ** depositToken.decimals)).toString()
     const addingLiquidityTokenAmounts = vaultInfo.underlyingCoins.map((coin) =>
-      coin === mainToken ? depositAmount.value.toString() : "0"
+      coin === mainToken ? amount : "0"
     );
     console.log("adding liquidity amount", addingLiquidityTokenAmounts);
 
@@ -298,6 +300,7 @@ const usePool = () => {
       .multipliedBy(new BigNumber(vaultLPBalance.toString()))
       .dividedBy(new BigNumber(totalSupply.toString()))
       .multipliedBy(SLIPPAGE)
+      .multipliedBy(10 ** vaultInfo.mainLPDecimals)
       .decimalPlaces(0);
     console.log("expectedBalance", expectedBalance.toString());
 
