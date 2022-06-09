@@ -90,7 +90,7 @@ const WithdrawConfirm = ({
         onClick={(e) => {
           if (loading) return;
           mixpanel.track("CONFIRM_DEPOSIT");
-          onConfirmWithdraw(collectType);
+          onConfirmWithdraw();
         }}
       >
         Withdraw Liquidity

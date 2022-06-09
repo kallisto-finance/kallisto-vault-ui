@@ -228,7 +228,7 @@ const Liquidity = ({ router }) => {
           onSelectToken={(token) => handleSelectWithdrawToken(token)}
           onBack={() => setStep(2)}
           onChangeWithdrawPercentage={(value) => setWithdrawPercentage(value)}
-          onConfirmWithdraw={(collectType) => {}}
+          onConfirmWithdraw={() => {}}
           loading={false}
         />
       )}
