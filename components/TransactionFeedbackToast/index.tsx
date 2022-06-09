@@ -7,11 +7,11 @@ type ToastStatus = "success" | "error";
 const TransactionFeedbackToast = ({
   status,
   msg,
-  hash,
+  hash = "",
 }: {
   status: ToastStatus;
   msg: string;
-  hash: string;
+  hash?: string;
 }) => (
   <div className="transaction-toast-container">
     <img className="transaction-toast-icon" src={`/assets/${status}.png`} />
@@ -20,7 +20,7 @@ const TransactionFeedbackToast = ({
       {hash && hash !== "" && (
         <div className="link">
           <a
-            href={`https://terrasco.pe/mainnet/tx/${hash}`}
+            href={`https://etherscan.io/tx/${hash}`}
             className={status}
             target="_blank"
           >

@@ -6,6 +6,7 @@ import { useWallet } from "./useWallet";
 import { TOKENS, VETH } from "utils/constants";
 
 import ERC20_ABI from "../abis/erc20.json";
+import { compare } from "utils/number";
 
 const useBalance = () => {
   const { wallet } = useWallet();
@@ -45,6 +46,8 @@ const useBalance = () => {
         })
       }
     }
+
+    tokens.sort((a, b) => compare(b.balance, a.balance))
 
     setTokenBalances(tokens);
   }

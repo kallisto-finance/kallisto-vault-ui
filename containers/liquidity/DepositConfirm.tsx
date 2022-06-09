@@ -5,23 +5,24 @@ import Button from "components/Button";
 import AmountView from "components/AmountView";
 import { LoadingSpinner } from "components/LoadingIcon";
 
-import { isNaN } from "utils/number";
+import { formatBalance, isNaN } from "utils/number";
 
 import cn from "classnames";
-import mixpanel from "mixpanel-browser";
 
+import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const DepositConfirm = ({
-  // pool,
+  vaultInfo,
+  depositAmount,
+  selectedToken,
   onBack,
-  // balance,
   onConfirmDeposit,
   loading,
 }) => {
   const expectedPoolShare = useMemo(() => {
-    return "11.11";
-  }, []);
+    return vaultInfo.sharedPercentage;
+  }, [vaultInfo, depositAmount]);
 
   return (
     <div className="liquidity-view-wrapper deposit-confirm">
@@ -36,8 +37,8 @@ const DepositConfirm = ({
       <div className="liquidation-view-content">
         <div className="view-subtitle">Amount</div>
         <AmountView
-          value={`23 CRV`}
-          icon="/assets/tokens/CRV.png"
+          value={formatBalance(depositAmount.value, 4, selectedToken.decimals)}
+          icon={selectedToken.img}
           iconBack={true}
           button={
             <Button className="amount-edit-button" onClick={(e) => onBack()}>
@@ -59,14 +60,15 @@ const DepositConfirm = ({
         </div>
       </div>
       <div
-        className="view-footer success"
+        className={cn("view-footer", { success: !loading, amount: loading })}
         onClick={(e) => {
           if (loading) return;
           mixpanel.track("CONFIRM_DEPOSIT");
           onConfirmDeposit();
         }}
       >
-        Add Liquidity
+        {loading && <LoadingSpinner />}
+        {loading ? "Adding Liquidity..." : "Add Liquidity"}
       </div>
     </div>
   );

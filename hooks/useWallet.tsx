@@ -51,6 +51,7 @@ export const WalletProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const ethereum = (window as any).ethereum;
+  
   const availableProviders = {
     metamask: ethereum?.isMetaMask,
     walletconnect: true,
@@ -111,7 +112,7 @@ export const WalletProvider = ({
             account,
             providerName: "metamask",
             provider: (window as any).ethereum,
-            network: ethereum.networkVersion || "1",
+            network: ethereum?.networkVersion || "1",
           };
 
           setWallet(walletObj);

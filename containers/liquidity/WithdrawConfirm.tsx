@@ -10,7 +10,6 @@ import TokenItem from "components/Tokens/TokenItem";
 import { compare, formatBalance, getBalanceFromTokenList } from "utils/number";
 import { COLLECT_TYPE, LIQUIDITY_BALANCE_STATUS } from "types";
 import { useOutsideAlerter } from "hooks";
-import { TOKENS } from "utils/constants";
 
 import cn from "classnames";
 
@@ -60,16 +59,12 @@ const WithdrawConfirm = ({
           {showTokenList && (
             <div className="token-list-wrapper">
               <div className="token-list-scroll-view">
-                {TOKENS.map((token) =>
+                {tokenBalances.map((token) =>
                   token.address.toLowerCase() ===
                   selectedToken.address.toLowerCase() ? null : (
                     <TokenItem
                       token={token}
-                      balance={formatBalance(
-                        getBalanceFromTokenList(token.address, tokenBalances),
-                        4,
-                        token.decimals
-                      )}
+                      balance={formatBalance(token.balance, 4, token.decimals)}
                       onSelectToken={(token) => onSelectToken(token)}
                       key={`withdraw-token-list-${token.symbol}`}
                     />

@@ -1,6 +1,14 @@
 export const ZERO = "0x0000000000000000000000000000000000000000";
 export const VETH = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 export const ZAP_DEPOSIT = "0xA79828DF1850E8a3A3064576f380D90aECDD3359"
+export const MAX_AMOUNT = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+/**
+ * estimation = estimation + estimation / GAS_MULTIPLIER
+ */
+export const GAS_MULTIPLIER = 5;
+
+export const SLIPPAGE = 0.995;
 
 export const WITHDRAW_LOCK_TIME = 3600 * 1000 * 1000 * 1000; // NANO SECONDS
 
@@ -22,7 +30,7 @@ export const TOKENS = [
   {
     name: "WETH",
     symbol: "WETH",
-    address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    address: WETH,
     img: "/assets/tokens/WETH.png",
     decimals: 18
   },

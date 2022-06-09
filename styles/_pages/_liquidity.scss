@@ -100,6 +100,18 @@
       color: #60699e;
       cursor: pointer;
 
+      &.amount {
+        background: #313650;
+        color: #60699E;
+        cursor: not-allowed;
+      }
+
+      &.insufficient {
+        background: #FF6F03;
+        color: #FFFFFF;
+        cursor: not-allowed;
+      }
+
       &.success {
         background: #37fad3;
         color: #20253b;
@@ -169,7 +181,7 @@
     .panel-buttons {
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       margin-top: 20px;
 
       .panel-button {

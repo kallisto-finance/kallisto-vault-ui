@@ -5,9 +5,7 @@ import TokenItem from "components/Tokens/TokenItem";
 
 import { useOutsideAlerter } from "hooks";
 
-import { isNaN, formatBalance, getBalanceFromTokenList } from "utils/number";
-
-import { TOKENS } from "utils/constants";
+import { isNaN, formatBalance } from "utils/number";
 
 import cn from "classnames";
 
@@ -58,16 +56,12 @@ const DepositAmountInput = ({
           {showTokenList && (
             <div className="token-list-wrapper">
               <div className="token-list-scroll-view">
-                {TOKENS.map((token) =>
+                {tokenBalances.map((token) =>
                   token.address.toLowerCase() ===
                   selectedToken.address.toLowerCase() ? null : (
                     <TokenItem
                       token={token}
-                      balance={formatBalance(
-                        getBalanceFromTokenList(token.address, tokenBalances),
-                        4,
-                        token.decimals
-                      )}
+                      balance={formatBalance(token.balance, 4, token.decimals)}
                       onSelectToken={(token) => onSelectToken(token)}
                       key={`deposit-token-list-${token.symbol}`}
                     />

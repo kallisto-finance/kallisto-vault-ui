@@ -21,13 +21,13 @@ const ManageLiquidity = ({ onBack, onWithdrawLiquidity, vaultInfo }) => {
               Add more Liquidity
               <img src="/assets/arrows/arrow-top-right.svg" />
             </div>
-            <div
+            {/* <div
               className="panel-button"
               onClick={(e) => onWithdrawLiquidity()}
             >
               Withdraw Liquidity
               <img src="/assets/arrows/arrow-top-right.svg" />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
