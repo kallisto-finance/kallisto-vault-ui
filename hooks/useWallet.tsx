@@ -7,8 +7,8 @@ import {
   useContext,
 } from "react";
 import Cookies from "universal-cookie";
-
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import curve from "@curvefi/api";
 
 import { ModalContainer, ModalSelectWallet } from "components/Modal";
 
@@ -51,6 +51,7 @@ export const WalletProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const ethereum = (window as any).ethereum;
+  
   const availableProviders = {
     metamask: ethereum?.isMetaMask,
     walletconnect: true,
@@ -111,7 +112,7 @@ export const WalletProvider = ({
             account,
             providerName: "metamask",
             provider: (window as any).ethereum,
-            network: ethereum.networkVersion || "1",
+            network: ethereum?.networkVersion || "1",
           };
 
           setWallet(walletObj);
@@ -209,6 +210,11 @@ export const WalletProvider = ({
       provider: (window as any).ethereum,
       network: (window as any).ethereum.networkVersion || "1",
     };
+
+    if (walletObj.provider) {
+      await curve.init("Web3", { externalProvider: walletObj.provider }, { chainId: Number(walletObj.network) })
+    }
+
     setWallet(walletObj);
   };
 
@@ -220,6 +226,10 @@ export const WalletProvider = ({
       provider: wcProvider,
       network: (wcProvider?.networkId as unknown as NetworkIds) || "1",
     };
+
+    if (walletObj.provider) {
+      await curve.init("Web3", { externalProvider: walletObj.provider }, { chainId: Number(walletObj.network) })
+    }
 
     // If provider is different, set to the WC wallet
     // if (wallet.provider !== 'walletconnect') {

@@ -64,8 +64,8 @@ export const isNaN = (x) => {
 };
 
 export const compare = (x, y) => {
-  const bnX = new BigNumber(x);
-  const bnY = new BigNumber(y);
+  const bnX = new BigNumber(x.toString());
+  const bnY = new BigNumber(y.toString());
 
   return bnX.comparedTo(bnY);
 };
@@ -80,8 +80,8 @@ export const allowOnlyNumber = (value) => {
   return re.test(value);
 };
 
-export const formatBalance = (value, fixed = 3, decimals = 6) => {
-  const balance = new BigNumber(value)
+export const formatBalance = (value, fixed = 2, decimals = 18) => {
+  const balance = new BigNumber(value.toString())
     .div(10 ** decimals)
     .toFormat(fixed)
     .toString();
@@ -90,10 +90,20 @@ export const formatBalance = (value, fixed = 3, decimals = 6) => {
 };
 
 export const toBalance = (value, fixed = 3, decimals = 6) => {
-  const balance = new BigNumber(value)
+  const balance = new BigNumber(value.toString())
     .div(10 ** decimals)
     .toFixed(fixed)
     .toString();
 
   return balance;
 };
+
+export const getBalanceFromTokenList = (tokenAddress, tokenList) => {
+  const findIndex = tokenList.findIndex((item) => item.address.toLowerCase() === tokenAddress.toLowerCase());
+  
+  if (findIndex < 0) {
+    return 0;
+  }
+
+  return tokenList[findIndex].balance;
+}

@@ -1,7 +1,7 @@
 import React from "react";
 
-const TokenItem = ({ token, balance }) => (
-  <div className="token-item-container">
+const TokenItem = ({ token, balance, onSelectToken }) => (
+  <div className="token-item-container" onClick={(e) => onSelectToken(token)}>
     <img className="token-image" src={token.img} />
     <div className="token-info">
       <div className="token-symbol">{token.symbol}</div>

@@ -5,15 +5,15 @@ import TokenItem from "components/Tokens/TokenItem";
 
 import { useOutsideAlerter } from "hooks";
 
-import { isNaN } from "utils/number";
-
-import { TOKENS } from "utils/constants";
+import { isNaN, formatBalance } from "utils/number";
 
 import cn from "classnames";
 
 const DepositAmountInput = ({
-  maxBalance,
-  balance,
+  selectedToken,
+  tokenBalances,
+  onSelectToken,
+  depositAmount,
   onChangeDepositInputAmount,
   theme = "default",
   connectedWallet,
@@ -35,8 +35,6 @@ const DepositAmountInput = ({
     setShowTokenList(false);
   });
 
-  const [selectedTokenIndex, setSelectedTokenIndex] = useState(0);
-
   return (
     <div
       className={cn("deposit-amount-input-container", theme, {
@@ -49,13 +47,8 @@ const DepositAmountInput = ({
           onClick={(e) => setShowTokenList(!showTokenList)}
           ref={tokenListRef}
         >
-          <img
-            className="selected-token-icon"
-            src={TOKENS[selectedTokenIndex].img}
-          />
-          <span className="selected-token-symbol">
-            {TOKENS[selectedTokenIndex].name}
-          </span>
+          <img className="selected-token-icon" src={selectedToken.img} />
+          <span className="selected-token-symbol">{selectedToken.name}</span>
           <img
             className="selected-token-arrow"
             src="/assets/arrows/arrow-down.svg"
@@ -63,9 +56,17 @@ const DepositAmountInput = ({
           {showTokenList && (
             <div className="token-list-wrapper">
               <div className="token-list-scroll-view">
-                {TOKENS.map((token) => (
-                  <TokenItem token={token} balance="123.3" />
-                ))}
+                {tokenBalances.map((token) =>
+                  token.address.toLowerCase() ===
+                  selectedToken.address.toLowerCase() ? null : (
+                    <TokenItem
+                      token={token}
+                      balance={formatBalance(token.balance, 4, token.decimals)}
+                      onSelectToken={(token) => onSelectToken(token)}
+                      key={`deposit-token-list-${token.symbol}`}
+                    />
+                  )
+                )}
               </div>
             </div>
           )}
@@ -77,8 +78,7 @@ const DepositAmountInput = ({
             className="input-amount"
             type="text"
             placeholder=""
-            defaultValue="0.00"
-            // value={balance}
+            value={depositAmount.format}
             onChange={(e) => {
               if (e.target.value !== "" && isNaN(e.target.value)) return;
               onChangeDepositInputAmount(e.target.value);
@@ -89,10 +89,14 @@ const DepositAmountInput = ({
         </div>
       </div>
       <div className="balance-section">
-        <span>Balance: 320.0212</span>
+        <span>{`Balance: ${formatBalance(
+          selectedToken.balance,
+          4,
+          selectedToken.decimals
+        )}`}</span>
         <Button
           className="max-button"
-          onClick={(e) => onChangeDepositInputAmount(maxBalance)}
+          onClick={(e) => onChangeDepositInputAmount("max")}
           disabled={!connectedWallet}
         >
           MAX

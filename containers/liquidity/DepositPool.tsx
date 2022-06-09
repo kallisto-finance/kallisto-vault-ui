@@ -10,59 +10,54 @@ import PoolInfo from "components/PoolInfo";
 
 import { LIQUIDITY_BALANCE_STATUS } from "types";
 
-import { isNaN, compare } from "utils/number";
+import { isNaN, compare, formatBalance, toBalance } from "utils/number";
 import mixpanel from "mixpanel-browser";
 
 import cn from "classnames";
 
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
-const DepositPoolContent = (props) => {
-  const {
-    pool,
-    onDeposit,
-    ustBalance,
-    balance,
-    volume,
-    onChangeDepositInputAmount,
-  } = props;
-
-  const [depositChecked, setDepositChecked] = useState(false);
-
-  const liquidityButtonStatus = useMemo((): LIQUIDITY_BALANCE_STATUS => {
-    if (isNaN(balance)) {
-      return {
-        status: "enter_amount",
-        text: "Enter an amount",
-      };
-    }
+const DepositButton = ({ balance, maxBalance, onDeposit }) => {
+  const buttonStatus = useMemo(() => {
+    const status = {
+      class: "success",
+      text: "Add Liquidity",
+    };
 
     if (compare(balance, 0) === 0) {
-      return {
-        status: "enter_amount",
-        text: "Enter an amount",
-      };
+      status.class = "amount";
+      status.text = "Enter an amount";
+    } else if (compare(balance, maxBalance) > 0) {
+      status.class = "insufficient";
+      status.text = "Insufficient Balance";
     }
 
-    if (compare(balance, ustBalance) === 1) {
-      return {
-        status: "insufficient",
-        text: "Insufficient Balance",
-      };
-    }
+    return status;
+  }, [balance, maxBalance]);
 
-    if (!depositChecked) {
-      return {
-        status: "enter_amount",
-        text: "Deposit UST",
-      };
-    }
+  return (
+    <div
+      className={cn("view-footer", buttonStatus.class)}
+      onClick={() => {
+        if (buttonStatus.class !== "success") return;
+        onDeposit();
+      }}
+    >
+      {buttonStatus.text}
+    </div>
+  );
+};
 
-    return {
-      status: "success",
-      text: "Deposit UST",
-    };
-  }, [balance, ustBalance, depositChecked]);
+const DepositPoolContent = (props) => {
+  const {
+    vaultInfo,
+    selectedToken,
+    tokenBalances,
+    onSelectToken,
+    onDeposit,
+    depositAmount,
+    onChangeDepositInputAmount,
+  } = props;
 
   return (
     <div className="liquidity-view-wrapper">
@@ -71,17 +66,25 @@ const DepositPoolContent = (props) => {
         <span>Active Pool</span>
       </div>
       <div className="liquidation-view-content">
-        <PoolInfo />
-        <AmountView
+        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={vaultInfo.apy} />
+        {/* <AmountView
           label="7 day Volume"
-          value="$6,946.19"
+          value="$0"
+          className="mt-2"
+        /> */}
+        <AmountView
+          label="Total Value Locked"
+          value={`$${formatBalance(vaultInfo.tvl)}`}
           className="mt-2"
         />
-        <AmountView label="Total Value Locked" value="$6,946.19" className="mt-2" />
-        <div className="view-subtitle">Select a token and add more liquidity</div>
+        <div className="view-subtitle">
+          Select a token and add more liquidity
+        </div>
         <DepositAmountInput
-          maxBalance={ustBalance}
-          balance={balance}
+          selectedToken={selectedToken}
+          tokenBalances={tokenBalances}
+          depositAmount={depositAmount}
+          onSelectToken={(token) => onSelectToken(token)}
           onChangeDepositInputAmount={(value) =>
             onChangeDepositInputAmount(value)
           }
@@ -89,9 +92,11 @@ const DepositPoolContent = (props) => {
           connectedWallet={() => {}}
         />
       </div>
-      <div className={cn("view-footer", "success")} onClick={() => onDeposit()}>
-        Add Liquidity
-      </div>
+      <DepositButton
+        balance={depositAmount.value}
+        maxBalance={selectedToken.balance}
+        onDeposit={() => onDeposit()}
+      />
     </div>
   );
 };

@@ -16,7 +16,6 @@ const WithdrawAmountInput = ({
   myCap,
   withdrawPercentage,
   onChangeWithdrawPercentage,
-  collectType,
 }) => {
   const withdrawAmount = useMemo(() => {
     return myCap.multipliedBy(withdrawPercentage).dividedBy(100).toFixed(0);
@@ -27,7 +26,7 @@ const WithdrawAmountInput = ({
       <div className="withdraw-balance-section">
         <div className="balance-input">
           <img
-            data-tip="The exact amount may differ depending on<br/>the price of bLuna"
+            data-tip="The exact amount may differ depending on<br/>the price of token"
             src="/assets/approx.png"
             style={{ height: 18 }}
           />

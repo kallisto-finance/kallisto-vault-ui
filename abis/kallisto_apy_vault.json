@@ -24,8 +24,8 @@
     "inputs": [
       { "name": "_token", "type": "address", "indexed": true },
       { "name": "_from", "type": "address", "indexed": true },
-      { "name": "_to", "type": "address", "indexed": true },
-      { "name": "amount", "type": "uint256", "indexed": false }
+      { "name": "token_amount", "type": "uint256", "indexed": false },
+      { "name": "vault_balance", "type": "uint256", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"
@@ -35,8 +35,8 @@
     "inputs": [
       { "name": "_token", "type": "address", "indexed": true },
       { "name": "_from", "type": "address", "indexed": true },
-      { "name": "_to", "type": "address", "indexed": true },
-      { "name": "amount", "type": "uint256", "indexed": false }
+      { "name": "token_amount", "type": "uint256", "indexed": false },
+      { "name": "vault_balance", "type": "uint256", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"
@@ -46,7 +46,9 @@
     "inputs": [
       { "name": "old_pool", "type": "address", "indexed": true },
       { "name": "new_pool", "type": "address", "indexed": true },
-      { "name": "_timestamp", "type": "uint256", "indexed": false }
+      { "name": "_timestamp", "type": "uint256", "indexed": false },
+      { "name": "from_amount", "type": "uint256", "indexed": false },
+      { "name": "to_amount", "type": "uint256", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"
@@ -132,11 +134,21 @@
       { "name": "amount", "type": "uint256" },
       { "name": "i", "type": "int128" },
       {
+        "components": [
+          { "internalType": "address", "name": "swap_pool", "type": "address" },
+          { "internalType": "address", "name": "j_token", "type": "address" },
+          { "internalType": "int128", "name": "i", "type": "int128" },
+          { "internalType": "int128", "name": "j", "type": "int128" },
+          { "internalType": "bool", "name": "is_underlying", "type": "bool" },
+          { "internalType": "bool", "name": "is_crypto_pool", "type": "bool" }
+        ],
+        "internalType": "struct Vyper_contract.SwapRoute[]",
         "name": "swap_route",
-        "type": "(address,address,int128,int128,bool,bool,uint256)[]"
-      }
+        "type": "tuple[]"
+      },
+      { "name": "min_amount", "type": "uint256" }
     ],
-    "outputs": []
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "payable",
@@ -147,11 +159,21 @@
       { "name": "amount", "type": "uint256" },
       { "name": "i", "type": "int128" },
       {
+        "components": [
+          { "internalType": "address", "name": "swap_pool", "type": "address" },
+          { "internalType": "address", "name": "j_token", "type": "address" },
+          { "internalType": "int128", "name": "i", "type": "int128" },
+          { "internalType": "int128", "name": "j", "type": "int128" },
+          { "internalType": "bool", "name": "is_underlying", "type": "bool" },
+          { "internalType": "bool", "name": "is_crypto_pool", "type": "bool" }
+        ],
+        "internalType": "struct Vyper_contract.SwapRoute[]",
         "name": "swap_route",
-        "type": "(address,address,int128,int128,bool,bool,uint256)[]"
-      }
+        "type": "tuple[]"
+      },
+      { "name": "min_amount", "type": "uint256" }
     ],
-    "outputs": []
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -161,15 +183,25 @@
       { "name": "_out_token", "type": "address" },
       { "name": "old_i", "type": "int128" },
       {
+        "components": [
+          { "internalType": "address", "name": "swap_pool", "type": "address" },
+          { "internalType": "address", "name": "j_token", "type": "address" },
+          { "internalType": "int128", "name": "i", "type": "int128" },
+          { "internalType": "int128", "name": "j", "type": "int128" },
+          { "internalType": "bool", "name": "is_underlying", "type": "bool" },
+          { "internalType": "bool", "name": "is_crypto_pool", "type": "bool" }
+        ],
+        "internalType": "struct Vyper_contract.SwapRoute[]",
         "name": "swap_route",
-        "type": "(address,address,int128,int128,bool,bool,uint256)[]"
+        "type": "tuple[]"
       },
       { "name": "new_pool", "type": "address" },
       { "name": "new_deposit", "type": "address" },
       { "name": "new_i", "type": "int128" },
       { "name": "new_pool_coin_count", "type": "uint8" },
       { "name": "new_lp_token", "type": "address" },
-      { "name": "new_is_crypto_pool", "type": "bool" }
+      { "name": "new_is_crypto_pool", "type": "bool" },
+      { "name": "new_lp_min_amount", "type": "uint256" }
     ],
     "outputs": []
   },

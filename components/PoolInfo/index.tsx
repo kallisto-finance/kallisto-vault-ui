@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactTooltip from "react-tooltip";
 
-const PoolInfo = () => {
+import { addresses } from 'utils/constants';
+
+const PoolInfo = ({ pool, apy }) => {
   return (
     <div className="pool-info-container">
       <div className="pool-name">
-        <img src="/assets/tokens/CRV.png" />
-        <span>crveth</span>
+        {pool && <img src={`${addresses.curve_pool_icon_base_link}#${pool.name}`} />}
+        <span>{pool ? pool.name : ""}</span>
       </div>
       <div className="pool-apy">
         <span data-tip="Estimated based on recent performance">APY</span>
-        <span className="apy">25.54%</span>
+        <span className="apy">{`${apy.toFixed(2)} %`}</span>
       </div>
       <ReactTooltip effect='solid' backgroundColor='#fff' textColor='#20253B'/>
     </div>

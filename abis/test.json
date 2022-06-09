@@ -1,0 +1,34 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token_address", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "int128", "name": "i", "type": "int128" },
+      {
+        "components": [
+          { "internalType": "address", "name": "swap_pool", "type": "address" },
+          { "internalType": "address", "name": "j_token", "type": "address" },
+          { "internalType": "int128", "name": "i", "type": "int128" },
+          { "internalType": "int128", "name": "j", "type": "int128" },
+          { "internalType": "bool", "name": "is_underlying", "type": "bool" },
+          { "internalType": "bool", "name": "is_crypto_pool", "type": "bool" }
+        ],
+        "internalType": "struct Test.SwapRoute[]",
+        "name": "swap_route",
+        "type": "tuple[]"
+      },
+      { "internalType": "uint256", "name": "min_amount", "type": "uint256" }
+    ],
+    "name": "setValue",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "value",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
