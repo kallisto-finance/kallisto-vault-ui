@@ -7,14 +7,45 @@ import LiquidityButton from "components/LiquidityButton";
 import { LoadingSpinner } from "components/LoadingIcon";
 import TokenItem from "components/Tokens/TokenItem";
 
-import { compare, formatBalance, getBalanceFromTokenList } from "utils/number";
-import { COLLECT_TYPE, LIQUIDITY_BALANCE_STATUS } from "types";
+import { compare, formatBalance } from "utils/number";
 import { useOutsideAlerter } from "hooks";
 
 import cn from "classnames";
 
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
+
+const WithdrawButton = ({ isLoading, percentage, onConfirmWithdraw }) => {
+  const buttonStatus = useMemo(() => {
+    const status = {
+      class: "success",
+      text: "Withdraw Liquidity",
+    };
+
+    if (isLoading) {
+      status.class = "amount";
+      status.text = "Withdrawing Liquidity...";
+    } else if (Number(percentage) <= 0) {
+      status.class = "amount";
+      status.text = "Select an amount";
+    }
+
+    return status;
+  }, [percentage, isLoading]);
+
+  return (
+    <div
+      className={cn("view-footer", buttonStatus.class)}
+      onClick={() => {
+        if (buttonStatus.class !== "success") return;
+        onConfirmWithdraw();
+      }}
+    >
+      {isLoading && <LoadingSpinner />}
+      {buttonStatus.text}
+    </div>
+  );
+};
 
 const WithdrawConfirm = ({
   vaultInfo,
@@ -85,16 +116,11 @@ const WithdrawConfirm = ({
           }
         />
       </div>
-      <div
-        className="view-footer success"
-        onClick={(e) => {
-          if (loading) return;
-          mixpanel.track("CONFIRM_DEPOSIT");
-          onConfirmWithdraw();
-        }}
-      >
-        Withdraw Liquidity
-      </div>
+      <WithdrawButton
+        percentage={withdrawPercentage}
+        isLoading={loading}
+        onConfirmWithdraw={() => onConfirmWithdraw()}
+      />
     </div>
   );
 };

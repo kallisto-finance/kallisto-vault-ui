@@ -70,8 +70,9 @@ const Liquidity = ({ router }) => {
 
   const [step, setStep] = useState(0);
 
-  const { vaultInfo, addLiquidity, fetchVaultInfo } = usePool();
-  const { tokenBalances } = useBalance();
+  const { vaultInfo, addLiquidity, withdrawLiquidity, fetchVaultInfo } =
+    usePool();
+  const { tokenBalances, fetchTokenBalances } = useBalance();
 
   // Deposit
   const [depositTokenAddress, setDepositTokenAddress] = useState(VETH); // ETH
@@ -127,6 +128,7 @@ const Liquidity = ({ router }) => {
 
         setDepositLoading(false);
         fetchVaultInfo();
+        fetchTokenBalances();
         setStep(0);
         setDepositAmount({
           value: new BigNumber(0),
@@ -146,11 +148,16 @@ const Liquidity = ({ router }) => {
         );
       },
       (e) => {
-        console.log('error', e);
+        console.log("error", e);
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
-          toast(<TransactionFeedbackToast status="error" msg="Transaction is failed." />);
+          toast(
+            <TransactionFeedbackToast
+              status="error"
+              msg="Transaction is failed."
+            />
+          );
         }
         setDepositLoading(false);
       }
@@ -160,6 +167,7 @@ const Liquidity = ({ router }) => {
   // Withdraw
   const [withdrawTokenAddress, setWithdrawTokenAddress] = useState(VETH);
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   const withdrawToken = useMemo(() => {
     const findIndex = tokenBalances.findIndex(
@@ -170,6 +178,53 @@ const Liquidity = ({ router }) => {
 
   const handleSelectWithdrawToken = (token) => {
     setWithdrawTokenAddress(token.address);
+  };
+
+  const handleWithdrawLiquidity = () => {
+    console.log(withdrawToken);
+    console.log(withdrawPercentage);
+
+    setWithdrawLoading(true);
+
+    withdrawLiquidity(
+      withdrawToken,
+      withdrawPercentage,
+      (res) => {
+        const { token, amount, txHash } = res;
+
+        setWithdrawLoading(false);
+        fetchVaultInfo();
+        fetchTokenBalances();
+        setStep(0);
+        setWithdrawPercentage(50);
+
+        toast(
+          <TransactionFeedbackToast
+            status="success"
+            msg={`Succesfully Withdrawn ${formatBalance(
+              amount,
+              4,
+              token.decimals
+            )} ${token.symbol}`}
+            hash={txHash}
+          />
+        );
+      },
+      (e) => {
+        console.log("error", e);
+        if (e?.code === 4001) {
+          toast(<TransactionFeedbackToast status="error" msg={e.message} />);
+        } else {
+          toast(
+            <TransactionFeedbackToast
+              status="error"
+              msg="Transaction is failed."
+            />
+          );
+        }
+        setWithdrawLoading(false);
+      }
+    );
   };
 
   return (
@@ -228,8 +283,8 @@ const Liquidity = ({ router }) => {
           onSelectToken={(token) => handleSelectWithdrawToken(token)}
           onBack={() => setStep(2)}
           onChangeWithdrawPercentage={(value) => setWithdrawPercentage(value)}
-          onConfirmWithdraw={() => {}}
-          loading={false}
+          onConfirmWithdraw={() => handleWithdrawLiquidity()}
+          loading={withdrawLoading}
         />
       )}
     </div>

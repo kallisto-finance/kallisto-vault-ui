@@ -10,6 +10,7 @@ import { compare } from "utils/number";
 import { VETH, MAX_AMOUNT, GAS_MULTIPLIER, SLIPPAGE } from "utils/constants";
 
 import VAULT_ABI from "../abis/kallisto_apy_vault.json";
+import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
 import ERC20_ABI from "../abis/erc20.json";
 
 const apy_vault_pool = addresses.contracts.apy_vault;
@@ -40,6 +41,7 @@ const usePool = () => {
     sharedPercentage: "0",
 
     underlyingCoins: [],
+    underlyingCoinAddresses: [],
     coins: [],
   });
 
@@ -85,6 +87,7 @@ const usePool = () => {
     );
 
     let underlyingCoins = [];
+    let underlyingCoinAddresses = [];
     let coins = [];
     let mainPool = null;
 
@@ -118,6 +121,7 @@ const usePool = () => {
       // console.log('ddddd', tvl.toString());
 
       underlyingCoins = [...mainPool.underlyingCoins];
+      underlyingCoinAddresses = [...mainPool.underlyingCoinAddresses];
       coins = [...mainPool.coins];
     }
 
@@ -140,6 +144,7 @@ const usePool = () => {
       sharedPercentage,
 
       underlyingCoins,
+      underlyingCoinAddresses,
       coins,
     });
   };
@@ -182,8 +187,11 @@ const usePool = () => {
 
     try {
       if (shouldSwap) {
-        const baseToken = depositToken.address == VETH ? "WETH" : depositToken.symbol;
-        const swapAmount = depositAmount.value.dividedBy(10 ** depositToken.decimals).toString();
+        const baseToken =
+          depositToken.address == VETH ? "WETH" : depositToken.symbol;
+        const swapAmount = depositAmount.value
+          .dividedBy(10 ** depositToken.decimals)
+          .toString();
         console.log(baseToken, swapAmount);
 
         let { route, output } = await curve.getBestRouteAndOutput(
@@ -197,7 +205,7 @@ const usePool = () => {
 
         if (route.length === 0) {
           onError({
-            message: "Can not swap"
+            message: "Can not swap",
           });
           return;
         }
@@ -214,8 +222,10 @@ const usePool = () => {
             break;
           }
 
-          const isUnderlying = (route[i].swapType === 2 || route[i].swapType === 4) ? true : false;
-          const isCryptoPool = (route[i].swapType === 3 || route[i].swapType === 4) ? true : false;
+          const isUnderlying =
+            route[i].swapType === 2 || route[i].swapType === 4 ? true : false;
+          const isCryptoPool =
+            route[i].swapType === 3 || route[i].swapType === 4 ? true : false;
 
           swapRoute.push([
             route[i].poolAddress,
@@ -223,35 +233,44 @@ const usePool = () => {
             route[i].i,
             route[i].j,
             isUnderlying,
-            isCryptoPool
-          ])
+            isCryptoPool,
+          ]);
         }
 
-        console.log('swapRoute param', swapRoute);
+        console.log("swapRoute param", swapRoute);
 
         const lastToken = swapRoute[swapRoute.length - 1][1];
-        const lastTokenContract = new ethers.Contract(lastToken, ERC20_ABI, signer);
+        const lastTokenContract = new ethers.Contract(
+          lastToken,
+          ERC20_ABI,
+          signer
+        );
 
         swapOutputTokenSymbol = await lastTokenContract.symbol();
         swapOutputTokenDecimals = await lastTokenContract.decimals();
 
-        console.log('last token info', swapOutputTokenSymbol, swapOutputTokenDecimals);
+        console.log(
+          "last token info",
+          swapOutputTokenSymbol,
+          swapOutputTokenDecimals
+        );
 
         if (swapOutputTokenSymbol !== vaultInfo.underlyingCoins[0]) {
-          output = await curve.routerExchangeExpected(baseToken,
+          output = await curve.routerExchangeExpected(
+            baseToken,
             swapOutputTokenSymbol,
             swapAmount
           );
         }
 
-        console.log('Final swap params -------------------------------------');
+        console.log("Final swap params -------------------------------------");
         console.log(swapRoute.toString());
         console.log(swapRoute);
         console.log(swapOutputTokenSymbol, swapOutputTokenDecimals, output);
-        
-        expectedSwapAmount = new BigNumber(output)
 
-        console.log('-------------------------------------------------------');
+        expectedSwapAmount = new BigNumber(output);
+
+        console.log("-------------------------------------------------------");
       }
     } catch (e) {
       errorFlag = true;
@@ -317,15 +336,19 @@ const usePool = () => {
       mainToken = swapOutputTokenSymbol;
     }
 
-    console.log('mainToken', mainToken);
+    console.log("mainToken", mainToken);
 
     const mainUnderlyingTokenIndex = vaultInfo.underlyingCoins.findIndex(
       (coin) => coin === mainToken
     );
 
     console.log(vaultInfo.underlyingCoins, mainToken, mainUnderlyingTokenIndex);
-    
-    const amount = shouldSwap ? expectedSwapAmount.toString() : new BigNumber(depositAmount.value.toString()).dividedBy(new BigNumber(10 ** depositToken.decimals)).toString()
+
+    const amount = shouldSwap
+      ? expectedSwapAmount.toString()
+      : new BigNumber(depositAmount.value.toString())
+          .dividedBy(new BigNumber(10 ** depositToken.decimals))
+          .toString();
     const addingLiquidityTokenAmounts = vaultInfo.underlyingCoins.map((coin) =>
       coin === mainToken ? amount : "0"
     );
@@ -368,7 +391,10 @@ const usePool = () => {
       .dividedBy(new BigNumber(totalSupply.toString()))
       .multipliedBy(SLIPPAGE)
       .decimalPlaces(0);
-    const expectedBalance = ethers.utils.parseUnits(expectedBalanceTemp.toString(), vaultInfo.mainLPDecimals)
+    const expectedBalance = ethers.utils.parseUnits(
+      expectedBalanceTemp.toString(),
+      vaultInfo.mainLPDecimals
+    );
     console.log("expectedBalance", expectedBalance.toString());
 
     /**
@@ -447,10 +473,178 @@ const usePool = () => {
     }
   };
 
+  const withdrawLiquidity = async (
+    withdrawToken,
+    withdrawPercentage,
+    onSuccess = (res) => {},
+    onError = (e) => {}
+  ) => {
+    try {
+      console.log(vaultInfo);
+      const signer = provider.getSigner();
+
+      let mainToken = withdrawToken.symbol;
+
+      const shouldSwap = vaultInfo.underlyingCoins.includes(mainToken)
+        ? false
+        : true;
+      console.log("should swap", shouldSwap);
+
+      let swapRoute = [];
+      if (shouldSwap) {
+        let { route } = await curve.getBestRouteAndOutput(
+          vaultInfo.underlyingCoins[0],
+          mainToken,
+          '100'
+        );
+
+        console.log('swap route', route);
+        
+        for (let i = 0; i < route.length; i++) {
+          if (route[i].poolAddress === vaultInfo.mainPoolAddress) {
+            continue;
+          }
+
+          const isUnderlying = (route[i].swapType === 2 || route[i].swapType === 4) ? true : false;
+          const isCryptoPool = (route[i].swapType === 3 || route[i].swapType === 4) ? true : false;
+
+          let outputCoinAddress = route[i].outputCoinAddress;
+          if (route[i].poolId === 'tricrypto2' && route[i].outputCoinAddress.toLocaleLowerCase() === VETH.toLowerCase()) {
+            outputCoinAddress = WETH;
+          }
+
+          swapRoute.push([
+            route[i].poolAddress,
+            outputCoinAddress,
+            route[i].i,
+            route[i].j,
+            isUnderlying,
+            isCryptoPool
+          ])
+        }
+        
+        if (withdrawToken.address === VETH) {
+          if (route[route.length - 1].poolId === "tricrypto2") {
+            swapRoute.push([WETH, VETH, 1, 0, false, false]);
+          }
+        } else if (withdrawToken.address === WETH) {
+          swapRoute.push([VETH, WETH, 0, 1, false, false]);
+        }
+
+        if (route[0].poolAddress !== vaultInfo.mainPoolAddress) {
+          mainToken = vaultInfo.underlyingCoins[0];
+        } else {
+          const mainTokenAddress = route[0].outputCoinAddress;
+          const lastTokenContract = new ethers.Contract(mainTokenAddress, ERC20_ABI, signer);
+          mainToken = await lastTokenContract.symbol();
+        }
+
+        console.log('swap route', swapRoute);
+      }
+
+      const mainUnderlyingTokenIndex = vaultInfo.underlyingCoins.findIndex(
+        (coin) => coin === mainToken
+      );
+      console.log(
+        vaultInfo.underlyingCoins,
+        mainToken,
+        mainUnderlyingTokenIndex
+      );
+
+      /**
+       * --------------------------------------------------------------------------
+       * Calculate how much lp should be removed
+       * --------------------------------------------------------------------------
+       */
+      const tempContract = new ethers.Contract(
+        apy_vault_pool,
+        VAULT_ABI2,
+        signer
+      );
+      const userBalance = await tempContract.balanceOf(wallet?.account);
+      const removeBalance = userBalance.mul(withdrawPercentage).div(100);
+      console.log(
+        "userBalance",
+        userBalance,
+        userBalance.toString(),
+        removeBalance.toString()
+      );
+
+      const expectedAmount = await tempContract.withdraw(
+        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        removeBalance.toString(),
+        mainUnderlyingTokenIndex,
+        swapRoute,
+        0
+      );
+      console.log("expectedAmount", expectedAmount, expectedAmount.toString());
+      const minAmount = expectedAmount.mul(995).div(1000);
+
+      const vaultContract = new ethers.Contract(
+        apy_vault_pool,
+        VAULT_ABI,
+        signer
+      );
+
+      console.log("withdraw params ************************");
+      console.log(
+        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        removeBalance.toString(),
+        mainUnderlyingTokenIndex,
+        swapRoute,
+        minAmount.toString()
+      );
+
+      let withdrawEstimationGas = await vaultContract.estimateGas.withdraw(
+        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        removeBalance.toString(),
+        mainUnderlyingTokenIndex,
+        swapRoute,
+        minAmount.toString(),
+        {
+          from: wallet.account,
+        }
+      );
+
+      withdrawEstimationGas = withdrawEstimationGas.add(
+        withdrawEstimationGas.div(GAS_MULTIPLIER)
+      );
+
+      console.log("withdraw estimate gas", withdrawEstimationGas.toString());
+
+      let withdrawHash: string | undefined;
+      const { hash } = await vaultContract.withdraw(
+        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        removeBalance.toString(),
+        mainUnderlyingTokenIndex,
+        swapRoute,
+        minAmount.toString(),
+        {
+          from: wallet.account,
+          gasLimit: withdrawEstimationGas,
+        }
+      );
+      withdrawHash = hash;
+      console.log("withdraw hash", withdrawHash);
+      if (withdrawHash) {
+        await provider.waitForTransaction(withdrawHash);
+      }
+
+      onSuccess({
+        token: withdrawToken,
+        amount: expectedAmount,
+        txHash: withdrawHash,
+      });
+    } catch (e) {
+      onError(e);
+    }
+  };
+
   return {
     vaultInfo,
     fetchVaultInfo,
     addLiquidity,
+    withdrawLiquidity,
   };
 };
 

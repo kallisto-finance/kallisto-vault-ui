@@ -50,13 +50,13 @@ const DepositConfirm = ({
         <AmountView value={`${expectedPoolShare} %`} />
         <div className="view-help mt-2">
           <div className="view-help-text">*This rate is dynamic.</div>
-          <div className="view-help-text">
+          {/* <div className="view-help-text">
             <img src="/assets/icons/attention.svg" />
             <span>
               Swapping ETH to CRV using best route on curve. Transaction fees
               apply.
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
       <div
