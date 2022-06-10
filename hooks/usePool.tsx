@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import BigNumber from "bignumber.js";
 import curve from "@curvefi/api";
 
-import { addresses } from "utils/constants";
+import { addresses, WETH } from "utils/constants";
 import { useWallet } from "./useWallet";
 
 import { compare } from "utils/number";
@@ -20,8 +20,6 @@ const usePool = () => {
   let provider: ethers.providers.Web3Provider | null = null;
   if (wallet.provider) {
     provider = new ethers.providers.Web3Provider(wallet?.provider);
-  } else {
-    provider = new ethers.providers.Web3Provider((window as any).ethereum);
   }
 
   const [vaultInfo, setVaultInfo] = useState({
@@ -150,12 +148,18 @@ const usePool = () => {
     fetchVaultInfo();
   }, [wallet]);
 
+  /***
+   * Add Liquidity
+   */
   const addLiquidity = async (
     depositToken,
     depositAmount,
     onSuccess = (res) => {},
     onError = (e) => {}
   ) => {
+    const signer = provider.getSigner();
+    // const signer = provider.getSigner(wallet.account);
+
     let errorFlag = false;
 
     console.log(vaultInfo);
@@ -172,23 +176,83 @@ const usePool = () => {
     console.log("should swap", shouldSwap);
 
     let swapRoute = [];
-    try {
-      // if (shouldSwap) {
-      //   const baseToken =
-      //     depositToken.address == VETH ? "WETH" : depositToken.symbol;
-      //   const swapAmount = depositAmount.value
-      //     .dividedBy(10 ** depositToken.decimals)
-      //     .toString();
-      //   console.log(baseToken, swapAmount);
-      //   const { route, output } = await curve.getBestRouteAndOutput(
-      //     baseToken,
-      //     vaultInfo.underlyingCoins[2],
-      //     swapAmount
-      //   );
+    let expectedSwapAmount = new BigNumber(0);
+    let swapOutputTokenSymbol = "";
+    let swapOutputTokenDecimals = "";
 
-      //   console.log("swap result ************************");
-      //   console.log(route, output);
-      // }
+    try {
+      if (shouldSwap) {
+        const baseToken = depositToken.address == VETH ? "WETH" : depositToken.symbol;
+        const swapAmount = depositAmount.value.dividedBy(10 ** depositToken.decimals).toString();
+        console.log(baseToken, swapAmount);
+
+        let { route, output } = await curve.getBestRouteAndOutput(
+          baseToken,
+          vaultInfo.underlyingCoins[0],
+          swapAmount
+        );
+
+        console.log("swap result ************************");
+        console.log(route, output);
+
+        if (route.length === 0) {
+          onError({
+            message: "Can not swap"
+          });
+          return;
+        }
+        if (depositToken.address === VETH) {
+          if (route[0].poolId === "tricrypto2") {
+            swapRoute.push([VETH, WETH, 0, 1, false, false]);
+          }
+        } else if (depositToken.address === WETH) {
+          swapRoute.push([WETH, VETH, 1, 0, false, false]);
+        }
+
+        for (let i = 0; i < route.length; i++) {
+          if (route[i].poolAddress === vaultInfo.mainPoolAddress) {
+            break;
+          }
+
+          const isUnderlying = (route[i].swapType === 2 || route[i].swapType === 4) ? true : false;
+          const isCryptoPool = (route[i].swapType === 3 || route[i].swapType === 4) ? true : false;
+
+          swapRoute.push([
+            route[i].poolAddress,
+            route[i].outputCoinAddress,
+            route[i].i,
+            route[i].j,
+            isUnderlying,
+            isCryptoPool
+          ])
+        }
+
+        console.log('swapRoute param', swapRoute);
+
+        const lastToken = swapRoute[swapRoute.length - 1][1];
+        const lastTokenContract = new ethers.Contract(lastToken, ERC20_ABI, signer);
+
+        swapOutputTokenSymbol = await lastTokenContract.symbol();
+        swapOutputTokenDecimals = await lastTokenContract.decimals();
+
+        console.log('last token info', swapOutputTokenSymbol, swapOutputTokenDecimals);
+
+        if (swapOutputTokenSymbol !== vaultInfo.underlyingCoins[0]) {
+          output = await curve.routerExchangeExpected(baseToken,
+            swapOutputTokenSymbol,
+            swapAmount
+          );
+        }
+
+        console.log('Final swap params -------------------------------------');
+        console.log(swapRoute.toString());
+        console.log(swapRoute);
+        console.log(swapOutputTokenSymbol, swapOutputTokenDecimals, output);
+        
+        expectedSwapAmount = new BigNumber(output)
+
+        console.log('-------------------------------------------------------');
+      }
     } catch (e) {
       errorFlag = true;
       onError(e);
@@ -197,9 +261,6 @@ const usePool = () => {
     if (errorFlag) {
       return;
     }
-
-    const signer = provider.getSigner();
-    // const signer = provider.getSigner(wallet.account);
 
     // Check Allowance
     let approveHash: string | undefined;
@@ -252,13 +313,19 @@ const usePool = () => {
      * ---------------------------------------------
      */
     console.log(vaultInfo.mainCurvePool);
+    if (shouldSwap) {
+      mainToken = swapOutputTokenSymbol;
+    }
+
+    console.log('mainToken', mainToken);
+
     const mainUnderlyingTokenIndex = vaultInfo.underlyingCoins.findIndex(
       (coin) => coin === mainToken
     );
 
     console.log(vaultInfo.underlyingCoins, mainToken, mainUnderlyingTokenIndex);
     
-    const amount = new BigNumber(depositAmount.value.toString()).dividedBy(new BigNumber(10 ** depositToken.decimals)).toString()
+    const amount = shouldSwap ? expectedSwapAmount.toString() : new BigNumber(depositAmount.value.toString()).dividedBy(new BigNumber(10 ** depositToken.decimals)).toString()
     const addingLiquidityTokenAmounts = vaultInfo.underlyingCoins.map((coin) =>
       coin === mainToken ? amount : "0"
     );
@@ -351,11 +418,11 @@ const usePool = () => {
         ethers.BigNumber.from(depositAmount.value.toString()),
         mainUnderlyingTokenIndex,
         swapRoute,
-        ethers.BigNumber.from(expectedBalance.toString()),
+        expectedBalance.toString(),
         {
           value:
             depositToken.address === VETH
-              ? ethers.BigNumber.from(depositAmount.toString())
+              ? ethers.BigNumber.from(depositAmount.value.toString())
               : ethers.BigNumber.from(0),
           from: wallet.account,
           gasLimit: depositEstimationGas,
