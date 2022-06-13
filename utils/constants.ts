@@ -8,7 +8,8 @@ export const MAX_AMOUNT = "0xfffffffffffffffffffffffffffffffffffffffffffffffffff
  */
 export const GAS_MULTIPLIER = 5;
 
-export const SLIPPAGE = 0.995;
+export const SLIPPAGE = 995;
+export const SLIPPAGE_DOMINATOR = 1000;
 
 export const WITHDRAW_LOCK_TIME = 3600 * 1000 * 1000 * 1000; // NANO SECONDS
 

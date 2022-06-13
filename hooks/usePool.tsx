@@ -7,7 +7,7 @@ import { addresses, WETH } from "utils/constants";
 import { useWallet } from "./useWallet";
 
 import { compare } from "utils/number";
-import { VETH, MAX_AMOUNT, GAS_MULTIPLIER, SLIPPAGE } from "utils/constants";
+import { VETH, MAX_AMOUNT, GAS_MULTIPLIER, SLIPPAGE, SLIPPAGE_DOMINATOR } from "utils/constants";
 
 import VAULT_ABI from "../abis/kallisto_apy_vault.json";
 import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
@@ -386,11 +386,14 @@ const usePool = () => {
 
     // calculate expected balance
     // expected balance = [expected lp balance] * [vault lp balance] / [total supply] * [slippage]
-    const expectedBalanceTemp = new BigNumber(expectedLpTokenAmount.toString())
+    const expectedBalanceTemp = totalSupply.isZero() ? new BigNumber(0) :
+     new BigNumber(expectedLpTokenAmount.toString())
       .multipliedBy(new BigNumber(vaultLPBalance.toString()))
-      .dividedBy(new BigNumber(totalSupply.toString()))
       .multipliedBy(SLIPPAGE)
+      .dividedBy(new BigNumber(totalSupply.toString()))
+      .dividedBy(SLIPPAGE_DOMINATOR)
       .decimalPlaces(0);
+    console.log('expectedBalanceTemp', expectedBalanceTemp, expectedBalanceTemp.toString());
     const expectedBalance = ethers.utils.parseUnits(
       expectedBalanceTemp.toString(),
       vaultInfo.mainLPDecimals
