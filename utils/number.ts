@@ -59,7 +59,7 @@ export const numberWithCommas = (x) => {
 };
 
 export const isNaN = (x) => {
-  const bn = new BigNumber(x);
+  const bn = new BigNumber(x.toString());
   return bn.isNaN();
 };
 

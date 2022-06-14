@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 
 import Button from "components/Button";
 import TokenItem from "components/Tokens/TokenItem";
 
 import { useOutsideAlerter } from "hooks";
 
-import { isNaN, formatBalance } from "utils/number";
+import { isNaN, formatBalance, compare } from "utils/number";
 
 import cn from "classnames";
 
@@ -35,6 +35,16 @@ const DepositAmountInput = ({
     setShowTokenList(false);
   });
 
+  const availableTokens = useMemo(() => {
+    const res = tokenBalances.filter(
+      (token) =>
+        token.address.toLowerCase() !== selectedToken.address.toLowerCase() &&
+        compare(token.balance, 0) > 0
+    );
+    console.log(res);
+    return res;
+  }, [tokenBalances, selectedToken]);
+
   return (
     <div
       className={cn("deposit-amount-input-container", theme, {
@@ -49,24 +59,23 @@ const DepositAmountInput = ({
         >
           <img className="selected-token-icon" src={selectedToken.img} />
           <span className="selected-token-symbol">{selectedToken.name}</span>
-          <img
-            className="selected-token-arrow"
-            src="/assets/arrows/arrow-down.svg"
-          />
+          {selectedToken.name !== "" && (
+            <img
+              className="selected-token-arrow"
+              src="/assets/arrows/arrow-down.svg"
+            />
+          )}
           {showTokenList && (
             <div className="token-list-wrapper">
               <div className="token-list-scroll-view">
-                {tokenBalances.map((token) =>
-                  token.address.toLowerCase() ===
-                  selectedToken.address.toLowerCase() ? null : (
-                    <TokenItem
-                      token={token}
-                      balance={formatBalance(token.balance, 4, token.decimals)}
-                      onSelectToken={(token) => onSelectToken(token)}
-                      key={`deposit-token-list-${token.symbol}`}
-                    />
-                  )
-                )}
+                {availableTokens.map((token) => (
+                  <TokenItem
+                    token={token}
+                    balance={formatBalance(token.balance, 4, token.decimals)}
+                    onSelectToken={(token) => onSelectToken(token)}
+                    key={`deposit-token-list-${token.symbol}`}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -77,7 +86,7 @@ const DepositAmountInput = ({
             autoFocus
             className="input-amount"
             type="text"
-            placeholder=""
+            placeholder="0.00"
             value={depositAmount.format}
             onChange={(e) => {
               if (e.target.value !== "" && isNaN(e.target.value)) return;

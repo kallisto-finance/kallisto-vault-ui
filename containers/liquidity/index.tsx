@@ -20,6 +20,8 @@ import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const Liquidity = ({ router }) => {
+  const { wallet } = useWallet();
+
   const getQueryParam = (url, param) => {
     // Expects a raw URL
     param = param.replace(/[[]/, "[").replace(/[]]/, "]");
@@ -68,6 +70,7 @@ const Liquidity = ({ router }) => {
    */
   getCampaignParams();
 
+  const [dataLoading, setDataLoading] = useState(false);
   const [step, setStep] = useState(0);
 
   const { vaultInfo, addLiquidity, withdrawLiquidity, fetchVaultInfo } =
@@ -81,7 +84,7 @@ const Liquidity = ({ router }) => {
   // ); // USDC
   const [depositAmount, setDepositAmount] = useState({
     value: new BigNumber(0),
-    format: "0.00",
+    format: "",
   });
   const [depositLoading, setDepositLoading] = useState(false);
 
@@ -89,6 +92,16 @@ const Liquidity = ({ router }) => {
     const findIndex = tokenBalances.findIndex(
       (item) => item.address === depositTokenAddress
     );
+    if (findIndex < 0) {
+      return {
+        address: "",
+        balance: new BigNumber(0),
+        decimals: 1,
+        img: "",
+        name: "",
+        symbol: "",
+      };
+    }
     return tokenBalances[findIndex];
   }, [depositTokenAddress, tokenBalances]);
 
@@ -173,6 +186,16 @@ const Liquidity = ({ router }) => {
     const findIndex = tokenBalances.findIndex(
       (item) => item.address === withdrawTokenAddress
     );
+    if (findIndex < 0) {
+      return {
+        address: "",
+        balance: new BigNumber(0),
+        decimals: 1,
+        img: "",
+        name: "",
+        symbol: "",
+      };
+    }
     return tokenBalances[findIndex];
   }, [withdrawTokenAddress, tokenBalances]);
 
@@ -227,6 +250,21 @@ const Liquidity = ({ router }) => {
     );
   };
 
+  const depositPool = () => (
+    <DepositPool
+      vaultInfo={vaultInfo}
+      selectedToken={depositToken}
+      tokenBalances={tokenBalances}
+      depositAmount={depositAmount}
+      onDeposit={() => {
+        moveScrollToTop();
+        setStep(1);
+      }}
+      onSelectToken={(token) => handleSelectDepositToken(token)}
+      onChangeDepositInputAmount={(value) => handleChangeDepositAmount(value)}
+    />
+  );
+
   return (
     <div className="liquidity-container">
       {step === 0 && (
@@ -235,25 +273,26 @@ const Liquidity = ({ router }) => {
             vaultInfo={vaultInfo}
             onManageLiquidity={() => setStep(2)}
           />
-          {depositToken ? (
-            <DepositPool
-              vaultInfo={vaultInfo}
-              selectedToken={depositToken}
-              tokenBalances={tokenBalances}
-              depositAmount={depositAmount}
-              onDeposit={() => {
-                moveScrollToTop();
-                setStep(1);
-              }}
-              onSelectToken={(token) => handleSelectDepositToken(token)}
-              onChangeDepositInputAmount={(value) =>
-                handleChangeDepositAmount(value)
-              }
-            />
+          {wallet?.account ? (
+            <>
+              {depositToken?.name !== "" && vaultInfo.mainPoolAddress !== "" ? (
+                depositPool()
+              ) : (
+                <div className="deposit-pool-loading-wrapper">
+                  <LoadingTriple />
+                </div>
+              )}
+            </>
           ) : (
-            <div className="deposit-pool-loading-wrapper">
-              <LoadingTriple />
-            </div>
+            <>
+              {vaultInfo.mainPoolAddress !== "" ? (
+                depositPool()
+              ) : (
+                <div className="deposit-pool-loading-wrapper">
+                  <LoadingTriple />
+                </div>
+              )}
+            </>
           )}
         </>
       )}
