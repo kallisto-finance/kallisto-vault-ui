@@ -69,13 +69,13 @@ const Liquidity = ({ router }) => {
    * Init
    */
   getCampaignParams();
-
-  const [dataLoading, setDataLoading] = useState(false);
   const [step, setStep] = useState(0);
 
   const { vaultInfo, addLiquidity, withdrawLiquidity, fetchVaultInfo } =
     usePool();
   const { tokenBalances, fetchTokenBalances } = useBalance();
+
+  const [dataLoading, setDataLoading] = useState(false);
 
   // Deposit
   const [depositTokenAddress, setDepositTokenAddress] = useState(VETH); // ETH
@@ -178,7 +178,7 @@ const Liquidity = ({ router }) => {
   };
 
   // Withdraw
-  const [withdrawTokenAddress, setWithdrawTokenAddress] = useState(VETH);
+  const [withdrawTokenAddress, setWithdrawTokenAddress] = useState("");
   const [withdrawPercentage, setWithdrawPercentage] = useState(50);
   const [withdrawLoading, setWithdrawLoading] = useState(false);
 
@@ -206,6 +206,11 @@ const Liquidity = ({ router }) => {
   const handleWithdrawLiquidity = () => {
     console.log(withdrawToken);
     console.log(withdrawPercentage);
+    
+    if (withdrawToken.name === "") {
+      toast(<TransactionFeedbackToast status="error" msg="Select a token you want to withdraw please" />);
+      return;
+    }
 
     setWithdrawLoading(true);
 

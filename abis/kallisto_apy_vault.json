@@ -151,7 +151,7 @@
     "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function",
     "name": "withdraw",
     "inputs": [

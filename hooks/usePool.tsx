@@ -24,14 +24,23 @@ const apy_vault_pool = addresses.contracts.apy_vault;
 const usePool = () => {
   const { wallet } = useWallet(); 
 
-  let provider: any;
-  if (wallet.provider) {
-    provider = new ethers.providers.Web3Provider(wallet?.provider);
-  } else {
-    provider = new ethers.providers.JsonRpcProvider(
-      `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
-    );
-  }
+  const [provider, setProvider] = useState(null);
+
+  useEffect(() => {
+    let provider: any;
+    if (wallet.provider) {
+      provider = new ethers.providers.Web3Provider(wallet?.provider);
+    } else {
+      provider = new ethers.providers.JsonRpcProvider(
+        `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+      );
+    }
+    console.log('*********************');
+    console.log(provider);
+
+    setProvider(provider);
+  }, [wallet?.provider])
+  
 
   const [vaultInfo, setVaultInfo] = useState({
     tvl: new BigNumber(0),
@@ -60,6 +69,7 @@ const usePool = () => {
       return;
     }
 
+    console.log('fetching values .......................', wallet?.account);
     // await curve.init('JsonRpc', {}, {gasPrice: 0, maxFeePerGas: 0, maxPriorityFeePerGas: 0});
     // await curve.init(
     //   "Web3",
@@ -162,11 +172,13 @@ const usePool = () => {
       underlyingCoinAddresses,
       coins,
     });
+
+    console.log(vaultInfo)
   };
 
   useEffect(() => {
     fetchVaultInfo();
-  }, [wallet]);
+  }, [wallet, provider]);
 
   /***
    * Add Liquidity
@@ -390,6 +402,27 @@ const usePool = () => {
     const vaultLPBalance = await mainLPTokenContract.balanceOf(apy_vault_pool);
     console.log("vault lp balance", vaultLPBalance.toString());
 
+    /**
+     * ---------------------------------------------------------------------------
+     */
+    // const vaultContract2 = new ethers.Contract(
+    //   apy_vault_pool,
+    //   VAULT_ABI2,
+    //   signer
+    // );
+
+    // const estimate = await vaultContract2.deposit(
+    //   "0xdAC17F958D2ee523a2206206994597C13D831ec7", //depositToken.address,
+    //   ethers.BigNumber.from(depositAmount.value.toString()),
+    //   3,
+    //   swapRoute,
+    //   0
+    // );
+    // console.log('aaa estimate', estimate.toString())
+    /**
+     * ---------------------------------------------------------------------------
+     */
+
     // total supply
     const vaultContract = new ethers.Contract(
       apy_vault_pool,
@@ -408,7 +441,7 @@ const usePool = () => {
           .multipliedBy(SLIPPAGE)
           .dividedBy(new BigNumber(totalSupply.toString()))
           .dividedBy(SLIPPAGE_DOMINATOR)
-          .decimalPlaces(0);
+          .decimalPlaces(0, 1)
     console.log(
       "expectedBalanceTemp",
       expectedBalanceTemp,
