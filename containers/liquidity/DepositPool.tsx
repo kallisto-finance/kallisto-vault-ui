@@ -23,8 +23,9 @@ const DepositButton = ({ balance, maxBalance, onDeposit }) => {
       class: "success",
       text: "Add Liquidity",
     };
+    console.log(balance)
 
-    if (compare(balance, 0) === 0) {
+    if (isNaN(balance) || compare(balance, 0) === 0) {
       status.class = "amount";
       status.text = "Enter an amount";
     } else if (compare(balance, maxBalance) > 0) {

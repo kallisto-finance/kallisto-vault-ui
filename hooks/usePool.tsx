@@ -7,7 +7,13 @@ import { addresses, WETH } from "utils/constants";
 import { useWallet } from "./useWallet";
 
 import { compare } from "utils/number";
-import { VETH, MAX_AMOUNT, GAS_MULTIPLIER, SLIPPAGE, SLIPPAGE_DOMINATOR } from "utils/constants";
+import {
+  VETH,
+  MAX_AMOUNT,
+  GAS_MULTIPLIER,
+  SLIPPAGE,
+  SLIPPAGE_DOMINATOR,
+} from "utils/constants";
 
 import VAULT_ABI from "../abis/kallisto_apy_vault.json";
 import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
@@ -16,12 +22,25 @@ import ERC20_ABI from "../abis/erc20.json";
 const apy_vault_pool = addresses.contracts.apy_vault;
 
 const usePool = () => {
-  const { wallet } = useWallet();
+  const { wallet } = useWallet(); 
 
-  let provider: ethers.providers.Web3Provider | null = null;
-  if (wallet.provider) {
-    provider = new ethers.providers.Web3Provider(wallet?.provider);
-  }
+  const [provider, setProvider] = useState(null);
+
+  useEffect(() => {
+    let provider: any;
+    if (wallet.provider) {
+      provider = new ethers.providers.Web3Provider(wallet?.provider);
+    } else {
+      provider = new ethers.providers.JsonRpcProvider(
+        `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+      );
+    }
+    console.log('*********************');
+    console.log(provider);
+
+    setProvider(provider);
+  }, [wallet?.provider])
+  
 
   const [vaultInfo, setVaultInfo] = useState({
     tvl: new BigNumber(0),
@@ -46,19 +65,25 @@ const usePool = () => {
   });
 
   const fetchVaultInfo = async () => {
-    if (!provider || !wallet?.account) {
+    if (!provider) {
       return;
     }
 
+    console.log('fetching values .......................', wallet?.account);
     // await curve.init('JsonRpc', {}, {gasPrice: 0, maxFeePerGas: 0, maxPriorityFeePerGas: 0});
+    // await curve.init(
+    //   "Web3",
+    //   { externalProvider: provider },
+    //   { chainId: 1 }
+    // );
     await curve.init(
-      "Web3",
-      { externalProvider: wallet.provider },
-      { chainId: Number(wallet.network) }
+      "Infura",
+      { network: "homestead", apiKey: process.env.INFURA_PROJECT_ID },
+      { gasPrice: 0, maxFeePerGas: 0, maxPriorityFeePerGas: 0, chainId: 1 }
     );
 
-    const signer = provider.getSigner(wallet.account);
-    const contract = new ethers.Contract(apy_vault_pool, VAULT_ABI, signer);
+    // const signer = provider.getSigner(wallet.account);
+    const contract = new ethers.Contract(apy_vault_pool, VAULT_ABI, provider);
 
     const mainPoolAddress = await contract.main_pool();
     const mainLPAddress = await contract.main_lp_token();
@@ -147,11 +172,13 @@ const usePool = () => {
       underlyingCoinAddresses,
       coins,
     });
+
+    console.log(vaultInfo)
   };
 
   useEffect(() => {
     fetchVaultInfo();
-  }, [wallet]);
+  }, [wallet, provider]);
 
   /***
    * Add Liquidity
@@ -375,6 +402,27 @@ const usePool = () => {
     const vaultLPBalance = await mainLPTokenContract.balanceOf(apy_vault_pool);
     console.log("vault lp balance", vaultLPBalance.toString());
 
+    /**
+     * ---------------------------------------------------------------------------
+     */
+    // const vaultContract2 = new ethers.Contract(
+    //   apy_vault_pool,
+    //   VAULT_ABI2,
+    //   signer
+    // );
+
+    // const estimate = await vaultContract2.deposit(
+    //   "0xdAC17F958D2ee523a2206206994597C13D831ec7", //depositToken.address,
+    //   ethers.BigNumber.from(depositAmount.value.toString()),
+    //   3,
+    //   swapRoute,
+    //   0
+    // );
+    // console.log('aaa estimate', estimate.toString())
+    /**
+     * ---------------------------------------------------------------------------
+     */
+
     // total supply
     const vaultContract = new ethers.Contract(
       apy_vault_pool,
@@ -386,14 +434,19 @@ const usePool = () => {
 
     // calculate expected balance
     // expected balance = [expected lp balance] * [vault lp balance] / [total supply] * [slippage]
-    const expectedBalanceTemp = totalSupply.isZero() ? new BigNumber(0) :
-     new BigNumber(expectedLpTokenAmount.toString())
-      .multipliedBy(new BigNumber(vaultLPBalance.toString()))
-      .multipliedBy(SLIPPAGE)
-      .dividedBy(new BigNumber(totalSupply.toString()))
-      .dividedBy(SLIPPAGE_DOMINATOR)
-      .decimalPlaces(0);
-    console.log('expectedBalanceTemp', expectedBalanceTemp, expectedBalanceTemp.toString());
+    const expectedBalanceTemp = totalSupply.isZero()
+      ? new BigNumber(0)
+      : new BigNumber(expectedLpTokenAmount.toString())
+          .multipliedBy(new BigNumber(vaultLPBalance.toString()))
+          .multipliedBy(SLIPPAGE)
+          .dividedBy(new BigNumber(totalSupply.toString()))
+          .dividedBy(SLIPPAGE_DOMINATOR)
+          .decimalPlaces(0, 1)
+    console.log(
+      "expectedBalanceTemp",
+      expectedBalanceTemp,
+      expectedBalanceTemp.toString()
+    );
     const expectedBalance = ethers.utils.parseUnits(
       expectedBalanceTemp.toString(),
       vaultInfo.mainLPDecimals
@@ -498,21 +551,27 @@ const usePool = () => {
         let { route } = await curve.getBestRouteAndOutput(
           vaultInfo.underlyingCoins[0],
           mainToken,
-          '100'
+          "100"
         );
 
-        console.log('swap route', route);
-        
+        console.log("swap route", route);
+
         for (let i = 0; i < route.length; i++) {
           if (route[i].poolAddress === vaultInfo.mainPoolAddress) {
             continue;
           }
 
-          const isUnderlying = (route[i].swapType === 2 || route[i].swapType === 4) ? true : false;
-          const isCryptoPool = (route[i].swapType === 3 || route[i].swapType === 4) ? true : false;
+          const isUnderlying =
+            route[i].swapType === 2 || route[i].swapType === 4 ? true : false;
+          const isCryptoPool =
+            route[i].swapType === 3 || route[i].swapType === 4 ? true : false;
 
           let outputCoinAddress = route[i].outputCoinAddress;
-          if (route[i].poolId === 'tricrypto2' && route[i].outputCoinAddress.toLocaleLowerCase() === VETH.toLowerCase()) {
+          if (
+            route[i].poolId === "tricrypto2" &&
+            route[i].outputCoinAddress.toLocaleLowerCase() ===
+              VETH.toLowerCase()
+          ) {
             outputCoinAddress = WETH;
           }
 
@@ -522,10 +581,10 @@ const usePool = () => {
             route[i].i,
             route[i].j,
             isUnderlying,
-            isCryptoPool
-          ])
+            isCryptoPool,
+          ]);
         }
-        
+
         if (withdrawToken.address === VETH) {
           if (route[route.length - 1].poolId === "tricrypto2") {
             swapRoute.push([WETH, VETH, 1, 0, false, false]);
@@ -538,11 +597,15 @@ const usePool = () => {
           mainToken = vaultInfo.underlyingCoins[0];
         } else {
           const mainTokenAddress = route[0].outputCoinAddress;
-          const lastTokenContract = new ethers.Contract(mainTokenAddress, ERC20_ABI, signer);
+          const lastTokenContract = new ethers.Contract(
+            mainTokenAddress,
+            ERC20_ABI,
+            signer
+          );
           mainToken = await lastTokenContract.symbol();
         }
 
-        console.log('swap route', swapRoute);
+        console.log("swap route", swapRoute);
       }
 
       const mainUnderlyingTokenIndex = vaultInfo.underlyingCoins.findIndex(
