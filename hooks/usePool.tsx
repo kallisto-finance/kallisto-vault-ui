@@ -20,6 +20,8 @@ import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
 import ERC20_ABI from "../abis/erc20.json";
 
 const apy_vault_pool = addresses.contracts.apy_vault;
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const usePool = () => {
   const { wallet } = useWallet(); 
@@ -106,6 +108,12 @@ const usePool = () => {
     let tvl = new BigNumber(0);
     let decimals = 0;
     let apy = 0;
+    let balance = userBalance.toString();
+
+
+    mixpanel.people.set({ balance: balance });
+    mixpanel.people.set({ "curve-apy-chaser": balance });
+
 
     const findIndex = addresses.contracts.curve_pools.findIndex(
       (pool) => pool.address.toLowerCase() === mainPoolAddress.toLowerCase()
