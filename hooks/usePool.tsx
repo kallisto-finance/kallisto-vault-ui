@@ -122,10 +122,12 @@ const usePool = () => {
       );
       const stats = await mainPool.stats.getParameters();
 
+      console.log('stats', stats);
+
       const apys = await mainPool.stats.getBaseApy();
       apy = Number(apys.day);
 
-      mainLPTokenPrice = new BigNumber(stats.virtualPrice);
+      
 
       const mainLPTokenContract = new ethers.Contract(
         mainLPAddress,
@@ -133,9 +135,19 @@ const usePool = () => {
       ).connect(provider);
 
       decimals = await mainLPTokenContract.decimals();
+      const mainLPTokenTotalSupply = await mainLPTokenContract.totalSupply();
       const vaultLPBalance = await mainLPTokenContract.balanceOf(
         apy_vault_pool
       );
+
+      /**
+       * Calculate LP Price
+       */
+      const mainPoolTotalLiquidity = await mainPool.stats.getTotalLiquidity();
+      console.log('mainPoolTotalLiquidity', mainPoolTotalLiquidity);
+
+      mainLPTokenPrice = new BigNumber(mainPoolTotalLiquidity).multipliedBy(10 ** decimals).dividedBy(mainLPTokenTotalSupply.toString());
+      console.log('lp token price', mainLPTokenPrice.toString())
 
       // console.log('lb', vaultLPBalance, vaultLPBalance.toString(), mainLPTokenPrice.toString(), decimals);
 
@@ -195,6 +207,8 @@ const usePool = () => {
     let errorFlag = false;
 
     console.log(vaultInfo);
+    console.log('deposit input params-----------------');
+    console.log(depositToken, depositAmount);
 
     // Token symbol which is using for adding liquidity
     // mainToken should be one of underlying tokens
@@ -216,7 +230,7 @@ const usePool = () => {
       if (shouldSwap) {
         const baseToken =
           depositToken.address == VETH ? "WETH" : depositToken.symbol;
-        const swapAmount = depositAmount.value
+        const swapAmount = new BigNumber(depositAmount.value.toString())
           .dividedBy(10 ** depositToken.decimals)
           .toString();
         console.log(baseToken, swapAmount);
