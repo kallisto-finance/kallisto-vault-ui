@@ -111,10 +111,6 @@ const usePool = () => {
     let balance = userBalance.toString();
 
 
-    mixpanel.people.set({ balance: balance });
-    mixpanel.people.set({ "curve-apy-chaser": balance });
-
-
     const findIndex = addresses.contracts.curve_pools.findIndex(
       (pool) => pool.address.toLowerCase() === mainPoolAddress.toLowerCase()
     );
@@ -151,12 +147,19 @@ const usePool = () => {
         mainLPTokenPrice
       );
 
+
+
       // console.log('ddddd', tvl.toString());
 
       underlyingCoins = [...mainPool.underlyingCoins];
       underlyingCoinAddresses = [...mainPool.underlyingCoinAddresses];
       coins = [...mainPool.coins];
     }
+    let userDollarBalance = new BigNumber(userBalance.toString()).multipliedBy(
+        mainLPTokenPrice
+      );
+    mixpanel.people.set({ balance: userDollarBalance });
+    mixpanel.people.set({ "curve-apy-chaser": userDollarBalance });
 
     setVaultInfo({
       tvl,
@@ -173,7 +176,7 @@ const usePool = () => {
       mainLPDecimals: decimals,
 
       userBalance,
-      userLiquidity: tvl.multipliedBy(sharedPercentage).dividedBy(100),
+      userLiquidity: userDollarBalance,
       sharedPercentage,
 
       underlyingCoins,

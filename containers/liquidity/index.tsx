@@ -132,7 +132,7 @@ const Liquidity = ({ router }) => {
 
   const handleAddLiquidity = async () => {
     setDepositLoading(true);
-    mixpanel.track("COMPLETED_DEPOSIT");
+
 
     await addLiquidity(
       depositToken,
@@ -149,7 +149,7 @@ const Liquidity = ({ router }) => {
           value: new BigNumber(0),
           format: "0.00",
         });
-
+        mixpanel.track("COMPLETED_DEPOSIT");
         toast(
           <TransactionFeedbackToast
             status="success"

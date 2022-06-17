@@ -219,7 +219,12 @@ export const WalletProvider = ({
       await curve.init("Web3", { externalProvider: walletObj.provider }, { chainId: Number(walletObj.network) })
     }
     mixpanel.track("WALLET_CONNECT");
-    mixpanel.identify(walletObj.account);
+
+mixpanel.identify(walletObj.account);
+    mixpanel.people.set({
+        'wallet':walletObj.account
+    });
+
     setWallet(walletObj);
   };
 
