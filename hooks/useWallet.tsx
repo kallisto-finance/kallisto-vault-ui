@@ -11,6 +11,9 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import curve from "@curvefi/api";
 
 import { ModalContainer, ModalSelectWallet } from "components/Modal";
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY);
+
 
 const cookies = new Cookies();
 
@@ -77,6 +80,7 @@ export const WalletProvider = ({
         const provider = (window as any).ethereum;
         const network = ethereum.networkVersion || "1";
         setWallet({ ...walletFromCookie, network, provider } as Wallet);
+
       }
     }
   }, [ethereum?.networkVersion]);
@@ -214,6 +218,12 @@ export const WalletProvider = ({
     if (walletObj.provider) {
       await curve.init("Web3", { externalProvider: walletObj.provider }, { chainId: Number(walletObj.network) })
     }
+    mixpanel.track("WALLET_CONNECT");
+
+mixpanel.identify(walletObj.account);
+    mixpanel.people.set({
+        'wallet':walletObj.account
+    });
 
     setWallet(walletObj);
   };
@@ -233,6 +243,8 @@ export const WalletProvider = ({
 
     // If provider is different, set to the WC wallet
     // if (wallet.provider !== 'walletconnect') {
+    mixpanel.track("WALLET_CONNECT");
+    mixpanel.identify(walletObj.account);
     setWallet(walletObj);
   };
 

@@ -20,6 +20,8 @@ import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
 import ERC20_ABI from "../abis/erc20.json";
 
 const apy_vault_pool = addresses.contracts.apy_vault;
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const usePool = () => {
   const { wallet } = useWallet(); 
@@ -106,6 +108,8 @@ const usePool = () => {
     let tvl = new BigNumber(0);
     let decimals = 0;
     let apy = 0;
+    let balance = userBalance.toString();
+
 
     const findIndex = addresses.contracts.curve_pools.findIndex(
       (pool) => pool.address.toLowerCase() === mainPoolAddress.toLowerCase()
@@ -155,12 +159,19 @@ const usePool = () => {
         mainLPTokenPrice
       );
 
+
+
       // console.log('ddddd', tvl.toString());
 
       underlyingCoins = [...mainPool.underlyingCoins];
       underlyingCoinAddresses = [...mainPool.underlyingCoinAddresses];
       coins = [...mainPool.coins];
     }
+    let userDollarBalance = new BigNumber(userBalance.toString()).multipliedBy(
+        mainLPTokenPrice
+      );
+    mixpanel.people.set({ balance: userDollarBalance });
+    mixpanel.people.set({ "curve-apy-chaser": userDollarBalance });
 
     setVaultInfo({
       tvl,
@@ -177,7 +188,7 @@ const usePool = () => {
       mainLPDecimals: decimals,
 
       userBalance,
-      userLiquidity: tvl.multipliedBy(sharedPercentage).dividedBy(100),
+      userLiquidity: userDollarBalance,
       sharedPercentage,
 
       underlyingCoins,
