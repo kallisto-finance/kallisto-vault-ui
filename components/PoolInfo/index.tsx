@@ -12,7 +12,7 @@ const PoolInfo = ({ pool, apy }) => {
       </div>
       <div className="pool-apy">
         <span data-tip="Estimated based on recent performance">APY</span>
-        <span className="apy">{`${apy.toFixed(2)} %`}</span>
+        <span className="apy">{`${apy} %`}</span>
       </div>
       <ReactTooltip effect='solid' backgroundColor='#fff' textColor='#20253B'/>
     </div>

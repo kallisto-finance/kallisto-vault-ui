@@ -19,7 +19,7 @@ import { formatBalance, toBalance } from "utils/number";
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
-const Liquidity = ({ router }) => {
+const Liquidity = ({ router, curveAPY }) => {
   const { wallet } = useWallet();
 
   const getQueryParam = (url, param) => {
@@ -324,6 +324,7 @@ const Liquidity = ({ router }) => {
         moveScrollToTop();
         setStep(1);
       }}
+      curveAPY={curveAPY}
       onSelectToken={(token) => handleSelectDepositToken(token)}
       onChangeDepositInputAmount={(value) => handleChangeDepositAmount(value)}
     />

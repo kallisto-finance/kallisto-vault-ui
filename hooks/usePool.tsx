@@ -7,6 +7,7 @@ import { addresses, WETH } from "utils/constants";
 import { useWallet } from "./useWallet";
 
 import { compare } from "utils/number";
+
 import {
   VETH,
   MAX_AMOUNT,
@@ -47,7 +48,6 @@ const usePool = () => {
   const [vaultInfo, setVaultInfo] = useState({
     tvl: new BigNumber(0),
     totalSupply: new BigNumber(0),
-    apy: 0,
 
     mainPoolAddress: "",
     mainPoolInfo: null,
@@ -107,7 +107,6 @@ const usePool = () => {
     let mainLPTokenPrice = new BigNumber(0);
     let tvl = new BigNumber(0);
     let decimals = 0;
-    let apy = 0;
 
     const findIndex = addresses.contracts.curve_pools.findIndex(
       (pool) => pool.address.toLowerCase() === mainPoolAddress.toLowerCase()
@@ -125,9 +124,6 @@ const usePool = () => {
       const stats = await mainPool.stats.getParameters();
 
       console.log("stats", stats);
-
-      const apys = await mainPool.stats.getBaseApy();
-      apy = Number(apys.day);
 
       const mainLPTokenContract = new ethers.Contract(
         mainLPAddress,
@@ -175,7 +171,6 @@ const usePool = () => {
     setVaultInfo({
       tvl,
       totalSupply,
-      apy,
 
       mainPoolAddress,
       mainPoolInfo:

@@ -1,4 +1,4 @@
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const moduleExports = {
   trailingSlash: true,
@@ -7,8 +7,23 @@ const moduleExports = {
     INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
     MIXPANEL_API_KEY: process.env.MIXPANEL_API_KEY,
     KALLISTO_VAULT_ADDRESS: process.env.KALLISTO_VAULT_ADDRESS,
+
     QUICK_NODE_ENDPOINT: process.env.QUICK_NODE_ENDPOINT,
-    ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY
+    ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+
+    REDIS_SERVER_URL: process.env.REDIS_SERVER_URL,
+    REDIS_SERVER_PORT: process.env.REDIS_SERVER_PORT,
+    REDIS_SERVER_PASSWORD: process.env.REDIS_SERVER_PASSWORD,
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback.fs = false;
+      config.resolve.fallback.dns = false;
+      config.resolve.fallback.net = false;
+      config.resolve.fallback.tls = false;
+    }
+
+    return config;
   },
 };
 
