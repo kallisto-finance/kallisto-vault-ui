@@ -10,16 +10,28 @@ To set up the app for local development:
 ```
 git clone https://github.com/kallisto-finance/kallisto-ui.git
 cd kallisto-ui
+```
 
-### Local Development
+## Local Development
 
-# Getting environment variables set
-cp .env.example .env
+**Getting environment variables set**    
+    
+Copy the exampple environment file.     
+```cp .env.example .env```    
 
-After seeing your .env file, make sure to replace placeholders with your Storyblok Api Key and Vault Contract Address
+After seeing your .env file, make sure to replace placeholders API keys and endpoints
 
+```
+# APY KEYS
 STORYBLOK_ACCESS_TOKEN=YOUR_STORYBLOK_API_KEY
-LIQUIDITY_CONTRACT=VAULT_CONTRACT_ADDRESS
+INFURA_PROJECT_ID=YOUR_INFURA_PROJECT_ID
+MIXPANEL_API_KEY=YOUR_MIXPANEL_ACCESS_TOKEN
+
+# SMART CONTRACTS
+KALLISTO_VAULT_ADDRESS=VAULT_CONTRACT_ADDRESS
+
+# API
+QUICK_NODE_ENDPOINT=YOUR_ETHEREUM_NODE_ENDPOINT
 ```
 
 ## Run
