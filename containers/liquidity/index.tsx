@@ -170,7 +170,7 @@ const Liquidity = ({ router }) => {
           toast(
             <TransactionFeedbackToast
               status="error"
-              msg="Transaction is failed."
+              msg="Transaction failed."
             />
           );
         }
@@ -248,7 +248,7 @@ const Liquidity = ({ router }) => {
           toast(
             <TransactionFeedbackToast
               status="error"
-              msg="Transaction is failed."
+              msg="Transaction failed."
             />
           );
         }

@@ -15,7 +15,7 @@ const ModalSelectWallet = ({ onChooseMetamask, onChooseWalletConnect }) => {
           <div className="wallet-choose-item-text">
             <span className="wallet-choose-item-name">Metamask</span>
             <span className="wallet-choose-item-sub">
-              Connect with Metamask Extention
+              Connect with Metamask Extension
             </span>
           </div>
         </div>
