@@ -170,7 +170,7 @@ const Liquidity = ({ router }) => {
           toast(
             <TransactionFeedbackToast
               status="error"
-              msg="Transaction is failed."
+              msg="Transaction failed."
             />
           );
         }
@@ -208,7 +208,7 @@ const Liquidity = ({ router }) => {
   const handleWithdrawLiquidity = () => {
     console.log(withdrawToken);
     console.log(withdrawPercentage);
-    
+
     if (withdrawToken.name === "") {
       toast(<TransactionFeedbackToast status="error" msg="Select a token you want to withdraw please" />);
       return;
@@ -227,7 +227,7 @@ const Liquidity = ({ router }) => {
         fetchTokenBalances();
         setStep(0);
         setWithdrawPercentage(50);
-
+        mixpanel.track("COMPLETED_WITHDRAWAL");
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -248,7 +248,7 @@ const Liquidity = ({ router }) => {
           toast(
             <TransactionFeedbackToast
               status="error"
-              msg="Transaction is failed."
+              msg="Transaction failed."
             />
           );
         }

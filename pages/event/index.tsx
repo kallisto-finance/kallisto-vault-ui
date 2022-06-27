@@ -4,6 +4,9 @@ import { fetchEvents } from "utils/storyblok";
 import { UpcomingEvent, EventSearchBar, PastEvent } from "components/Event";
 import { convertUTCtoLocalTime, parseDate } from "utils/date";
 
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY)
+
 const NoEvents = () => (
   <div className="no-events-container">
     <img src="/assets/kallistos/sad-kalli.png" />
@@ -98,3 +101,4 @@ const Event = () => {
 };
 
 export default Event;
+  mixpanel.track("VISIT_EVENTS");

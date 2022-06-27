@@ -38,6 +38,7 @@ const WithdrawButton = ({ isLoading, percentage, onConfirmWithdraw }) => {
       className={cn("view-footer", buttonStatus.class)}
       onClick={() => {
         if (buttonStatus.class !== "success") return;
+        mixpanel.track("CONFIRM_WITHDRAWAL");
         onConfirmWithdraw();
       }}
     >

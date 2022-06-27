@@ -6,6 +6,9 @@ import { BlogLatestItem } from "components/Blog";
 import { fetchBlogs } from "utils/storyblok";
 import { convertDateString2 } from "utils/date";
 
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY)
+
 const Blog = () => {
   const [blog, setBlog] = useState(null);
   const [latestBlogs, setLatestBlog] = useState([]);
@@ -66,3 +69,4 @@ const Blog = () => {
 };
 
 export default Blog;
+mixpanel.track("VISIT_BLOG");
