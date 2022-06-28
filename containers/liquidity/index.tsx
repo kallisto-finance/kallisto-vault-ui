@@ -71,8 +71,13 @@ const Liquidity = ({ router }) => {
   getCampaignParams();
   const [step, setStep] = useState(0);
 
-  const { vaultInfo, addLiquidity, withdrawLiquidity, fetchVaultInfo } =
-    usePool();
+  const {
+    vaultInfo,
+    addLiquidity,
+    withdrawLiquidity,
+    fetchVaultInfo,
+    calculateDepositParams,
+  } = usePool();
   const { tokenBalances, fetchTokenBalances } = useBalance();
 
   const [dataLoading, setDataLoading] = useState(false);
@@ -114,7 +119,7 @@ const Liquidity = ({ router }) => {
     // console.log(value)
     if (value === "max") {
       const amount = depositToken.balance;
-      const format = toBalance(amount, 4, depositToken.decimals);
+      const format = toBalance(amount, 2, depositToken.decimals);
       setDepositAmount({
         value: amount,
         format,
@@ -133,11 +138,12 @@ const Liquidity = ({ router }) => {
   const handleAddLiquidity = async () => {
     setDepositLoading(true);
 
-
     await addLiquidity(
       depositToken,
       depositAmount,
       (res) => {
+        toast.dismiss();
+
         const { token, amount, txHash } = res;
 
         setDepositLoading(false);
@@ -163,6 +169,8 @@ const Liquidity = ({ router }) => {
         );
       },
       (e) => {
+        toast.dismiss();
+
         console.log("error", e);
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
@@ -175,6 +183,26 @@ const Liquidity = ({ router }) => {
           );
         }
         setDepositLoading(false);
+      },
+      (res) => {
+        toast.dismiss();
+
+        const { estimateTime, txHash } = res;
+
+        const minutes = Math.ceil(Number(estimateTime) / 60)
+
+        toast(
+          <TransactionFeedbackToast
+            status="success"
+            msg={`Your transaction is being confirmed...`}
+            hash={txHash}
+            linkText={`Estimated Duration: < ${minutes} min${minutes > 1 ? 's' : ''}`}
+          />,
+          {
+            autoClose: false,
+            closeButton: false
+          }
+        );
       }
     );
   };
@@ -210,7 +238,12 @@ const Liquidity = ({ router }) => {
     console.log(withdrawPercentage);
 
     if (withdrawToken.name === "") {
-      toast(<TransactionFeedbackToast status="error" msg="Select a token you want to withdraw please" />);
+      toast(
+        <TransactionFeedbackToast
+          status="error"
+          msg="Select a token you want to withdraw please"
+        />
+      );
       return;
     }
 
@@ -220,6 +253,8 @@ const Liquidity = ({ router }) => {
       withdrawToken,
       withdrawPercentage,
       (res) => {
+        toast.dismiss();
+
         const { token, amount, txHash } = res;
 
         setWithdrawLoading(false);
@@ -241,6 +276,8 @@ const Liquidity = ({ router }) => {
         );
       },
       (e) => {
+        toast.dismiss();
+
         console.log("error", e);
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
@@ -253,6 +290,26 @@ const Liquidity = ({ router }) => {
           );
         }
         setWithdrawLoading(false);
+      },
+      (res) => {
+        toast.dismiss();
+
+        const { estimateTime, txHash } = res;
+
+        const minutes = Math.ceil(Number(estimateTime) / 60)
+
+        toast(
+          <TransactionFeedbackToast
+            status="success"
+            msg={`Your transaction is being confirmed...`}
+            hash={txHash}
+            linkText={`Estimated Duration: < ${minutes} min${minutes > 1 ? 's' : ''}`}
+          />,
+          {
+            autoClose: false,
+            closeButton: false
+          }
+        );
       }
     );
   };
@@ -311,6 +368,7 @@ const Liquidity = ({ router }) => {
           onBack={() => setStep(0)}
           onConfirmDeposit={() => handleAddLiquidity()}
           loading={depositLoading}
+          calcExpectedPercentage={calculateDepositParams}
         />
       )}
       {step === 2 && (

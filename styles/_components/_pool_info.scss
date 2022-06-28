@@ -6,6 +6,10 @@
   border-radius: 30px;
   display: flex;
 
+  @media screen and (max-width: 768px) {
+    height: 43px;
+  }
+
   .pool-name {
     flex: 1;
     display: flex;
@@ -16,9 +20,17 @@
     font-weight: 700;
     font-size: 32px;
 
+    @media screen and (max-width: 768px) {
+      font-size: 18px;
+    }
+
     img {
       height: 34px;
       margin-right: 8px;
+
+      @media screen and (max-width: 768px) {
+        height: 25px;
+      }
     }
   }
 
@@ -31,11 +43,19 @@
     font-size: 16px;
     color: #fff;
 
+    @media screen and (max-width: 768px) {
+      font-size: 13px;
+    }
+
     .apy {
       color: #37fad3;
       font-weight: 700;
       font-size: 30px;
       padding-left: 9px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 18px;
+      }
     }
   }
 }

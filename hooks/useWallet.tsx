@@ -204,6 +204,13 @@ export const WalletProvider = ({
   const connectMetaMask = async () => {
     if (!ethereum) return;
 
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{
+        chainId: "0x1",
+      }]
+    });
+
     const accounts = await ethereum.request({
       method: "eth_requestAccounts",
     });
@@ -220,7 +227,7 @@ export const WalletProvider = ({
     }
     mixpanel.track("WALLET_CONNECT");
 
-mixpanel.identify(walletObj.account);
+    mixpanel.identify(walletObj.account);
     mixpanel.people.set({
         'wallet':walletObj.account
     });

@@ -7,6 +7,11 @@
   border-radius: 51.5863px;
   padding: 22px 24px;
 
+  @media screen and (max-width: 768px) {
+    height: 61px !important;
+    justify-content: center;
+  }
+
   &.border {
     border-bottom-left-radius: 0px;
   }
@@ -32,10 +37,18 @@
 
     .selected-token-icon {
       height: 30px;
+
+      @media screen and (max-width: 768px) {
+        height: 20px;
+      }
     }
 
     .selected-token-arrow {
       height: 16px;
+
+      @media screen and (max-width: 768px) {
+        height: 10px;  
+      }
     }
 
     .selected-token-symbol {
@@ -43,6 +56,11 @@
       font-size: 30px;
       color: #fff;
       padding: 0px 10px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 18px;
+      }
+      
     }
   }
 
@@ -73,6 +91,10 @@
     span {
       font-size: 12px;
       color: #B6B2EF;
+
+      @media screen and (max-width: 768px) {
+        font-size: 10px; 
+      }
     }
   }
   
@@ -91,7 +113,7 @@
 
     @media screen and (max-width: 768px) {
       width: 29.56px;
-      height: 16.21px;
+      height: 12.21px;
       font-size: 8px;
     }
   }

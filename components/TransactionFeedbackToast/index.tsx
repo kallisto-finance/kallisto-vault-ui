@@ -2,19 +2,25 @@ import React from "react";
 
 import { getWalletAddressEllipsis } from "utils/common";
 
-type ToastStatus = "success" | "error";
+type ToastStatus = "success" | "error" | "wait";
 
 const TransactionFeedbackToast = ({
   status,
   msg,
   hash = "",
+  linkText = "",
 }: {
   status: ToastStatus;
   msg: string;
   hash?: string;
+  linkText?: string;
 }) => (
   <div className="transaction-toast-container">
-    <img className="transaction-toast-icon" src={`/assets/${status}.png`} />
+    {status === "wait" ? (
+      <img className="transaction-toast-icon" src={`/assets/${status}.gif`} />
+    ) : (
+      <img className="transaction-toast-icon" src={`/assets/${status}.png`} />
+    )}
     <div className="transaction-toast-text">
       <div className="text">{msg}</div>
       {hash && hash !== "" && (
@@ -24,7 +30,7 @@ const TransactionFeedbackToast = ({
             className={status}
             target="_blank"
           >
-            {getWalletAddressEllipsis(hash, 8, 8)}
+            {linkText !== "" ? linkText : getWalletAddressEllipsis(hash, 8, 8)}
           </a>
         </div>
       )}

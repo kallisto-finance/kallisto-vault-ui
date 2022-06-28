@@ -96,7 +96,7 @@ const WithdrawConfirm = ({
                   selectedToken.address.toLowerCase() ? null : (
                     <TokenItem
                       token={token}
-                      balance={formatBalance(token.balance, 4, token.decimals)}
+                      balance={formatBalance(token.balance, 2, token.decimals)}
                       onSelectToken={(token) => onSelectToken(token)}
                       key={`withdraw-token-list-${token.symbol}`}
                     />

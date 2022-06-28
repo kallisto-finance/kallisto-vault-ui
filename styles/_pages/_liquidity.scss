@@ -5,13 +5,23 @@
   display: flex;
 
   @media screen and (max-width: 768px) {
+    padding: 0px 30px;
+  }
+
+  @media screen and (max-width: 768px) {
     margin-top: 30px;
+    flex-direction: column;
   }
 
   .liquidity-view-wrapper {
     width: 100%;
     background: #262b43;
     border-radius: 30px;
+
+    @media screen and (max-width: 768px) {
+      border-radius: 11px;    
+    }
+
 
     &.deposit-confirm {
       max-width: 546px;
@@ -40,6 +50,12 @@
       font-size: 16px;
       line-height: 21px;
 
+      @media screen and (max-width: 768px) {
+       font-size: 13px; 
+       border-top-left-radius: 11px;
+       border-top-right-radius: 11px;
+      }
+
       img {
         height: 11px;
         margin-right: 10px;
@@ -56,9 +72,18 @@
       color: #ffffff;
       padding: 35px 54px 0px;
 
+      @media screen and (max-width: 768px) {
+        font-size: 15px;
+        padding: 35px 20px 0px;
+      }
+
       .nav-button {
         cursor: pointer;
         height: 25px;
+
+        @media screen and (max-width: 768px) {
+          height: 15px;
+        }
       }
 
       .nav-text {
@@ -100,6 +125,13 @@
       color: #60699e;
       cursor: pointer;
 
+      @media screen and (max-width: 768px) {
+        height: 50px;
+        font-size: 15px;       
+        border-bottom-left-radius: 11px;
+        border-bottom-right-radius: 11px; 
+      }
+
       &.amount {
         background: #313650;
         color: #60699E;
@@ -125,12 +157,20 @@
       line-height: 21px;
       margin-top: 25px;
       margin-bottom: 25px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 13px;
+      }
     }
   }
 
   .liquidation-view-content {
     width: 100%;
     padding: 38px 22px;
+
+    @media screen and (max-width: 768px) {
+      padding: 9px;   
+    }
   }
 
   .main-liquidity-container {
@@ -139,6 +179,13 @@
     max-width: 285px;
     position: relative;
     margin-right: 92px;
+
+    @media screen and (max-width: 768px) {
+      max-width: 100%;
+      margin-right: 0px;
+      height: fit-content;
+      margin-bottom: 30px;
+    }
   }
 
   .deposit-liquidity-container {
@@ -163,12 +210,22 @@
     flex-direction: column;
     align-items: center;
 
+    @media screen and (max-width: 768px) {
+      margin: 10px 11px 20px;
+      border-radius: 11px;
+      padding: 9px;
+    }
+
     .panel-title {
       color: #b6b2ef;
       text-align: center;
       font-weight: 500;
       font-size: 16px;
       line-height: 22px;
+
+      @media screen and (max-width: 768px) {
+       font-size: 12px; 
+      }
     }
 
     .panel-value {
@@ -176,6 +233,10 @@
       font-weight: 700;
       font-size: 30px;
       margin-top: 6px;
+
+      @media screen and (max-width: 768px) {
+       font-size: 18px; 
+      }
     }
 
     .panel-buttons {
@@ -183,6 +244,10 @@
       display: flex;
       justify-content: space-around;
       margin-top: 20px;
+
+      @media screen and (max-width: 768px) {
+        margin-top: 10px;
+      }
 
       .panel-button {
         height: 32px;
@@ -197,6 +262,15 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+
+        @media screen and (max-width: 768px) {
+          font-size: 10px;
+          height: 25px;
+
+          img {
+            display: none;
+          }
+        }
       }
     }
   }
@@ -207,12 +281,22 @@
     border-radius: 20px;
     padding: 24px;
 
+    @media screen and (max-width: 768px) {
+      padding: 9px;
+      border-radius: 11px;
+    }
+
     &-title {
       color: #b6b2ef;
       font-size: 16px;
       font-weight: 500;
       text-align: center;
       margin-bottom: 13px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
     }
 
     &-short {
@@ -229,6 +313,10 @@
       color: #f7fcfb;
       text-align: center;
       margin-bottom: 13px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 18px;  
+      }
     }
 
     &-button {
@@ -243,6 +331,11 @@
       font-size: 14px;
       color: #262b43;
       padding: 5px 0px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 15px; 
+        border-radius: 11px;
+      }
     }
   }
 
@@ -270,6 +363,10 @@
       max-width: 193px;
       height: 80px;
 
+      @media screen and (max-width: 768px) {
+        height: 60px;
+      }
+
       &.border {
         border-bottom-left-radius: 0px;
         border-bottom-right-radius: 0px;
@@ -288,6 +385,10 @@
         font-size: 30px;
         color: #fff;
         padding: 0px 10px;
+
+        @media screen and (max-width: 768px) {
+          font-size: 18px;
+        }
       }
     }
 
