@@ -8,8 +8,17 @@
   border-radius: 30px;
   padding: 0px 25px;
 
+  @media screen and (max-width: 768px) {
+    height: 101px;
+    border-radius: 11px;
+  }
+
   img {
     height: 100px;
+
+    @media screen and (max-width: 768px) {
+      height: 70px;
+    }
   }
 
   .chaser-logo-description {
@@ -17,15 +26,23 @@
     flex-direction: column;
     color: #FDFDFD;
     margin-left: 10px;
-
+    
     .text1 {
       font-weight: 900;
       font-size: 30px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 20px;
+      }
     }
 
     .text2 {
       font-weight: 600;
       font-size: 25px;
+
+      @media screen and (max-width: 768px) {
+        font-size: 16px;
+      }
     }
 
     .text3 {

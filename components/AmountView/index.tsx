@@ -1,5 +1,7 @@
 import React from "react";
 
+import { LoadingTriple } from "components/LoadingIcon";
+
 import cn from "classnames";
 
 const AmountView = ({
@@ -13,7 +15,8 @@ const AmountView = ({
   containerStyle = {},
   button = null,
   theme = "default",
-  className="",
+  className = "",
+  loading = false,
   ...props
 }) => (
   <div
@@ -24,16 +27,27 @@ const AmountView = ({
     })}
     style={{ ...containerStyle }}
   >
-    {label !== "" && <div className={cn("amount-view-label", theme)}>{label}</div>}
-    {(icon !== "" && !iconBack) && <img className="amount-view-icon" src={icon} />}
-    <span
-      className={cn("amount-view-value", { highlight, vertical })}
-      style={{ ...props.style }}
-    >
-      {value}
-    </span>
-    {(icon !== "" && iconBack) && <img className="amount-view-icon" src={icon} />}
-    {button}
+    {!loading && (
+      <>
+        {label !== "" && (
+          <div className={cn("amount-view-label", theme)}>{label}</div>
+        )}
+        {icon !== "" && !iconBack && (
+          <img className="amount-view-icon" src={icon} />
+        )}
+        <span
+          className={cn("amount-view-value", { highlight, vertical })}
+          style={{ ...props.style }}
+        >
+          {value}
+        </span>
+        {icon !== "" && iconBack && (
+          <img className="amount-view-icon" src={icon} />
+        )}
+        {button}
+      </>
+    )}
+    {loading && <LoadingTriple /> }
   </div>
 );
 

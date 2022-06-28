@@ -7,6 +7,7 @@ import { addresses, WETH } from "utils/constants";
 import { useWallet } from "./useWallet";
 
 import { compare } from "utils/number";
+
 import {
   VETH,
   MAX_AMOUNT,
@@ -14,6 +15,7 @@ import {
   SLIPPAGE,
   SLIPPAGE_DOMINATOR,
 } from "utils/constants";
+import { getEstimateTime } from "utils/api-etherscan";
 
 import VAULT_ABI from "../abis/kallisto_apy_vault.json";
 import VAULT_ABI2 from "../abis/kallisto_apy_vault_readable.json";
@@ -24,7 +26,7 @@ import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const usePool = () => {
-  const { wallet } = useWallet(); 
+  const { wallet } = useWallet();
 
   const [provider, setProvider] = useState(null);
 
@@ -37,17 +39,15 @@ const usePool = () => {
         `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
       );
     }
-    console.log('*********************');
+    console.log("*********************");
     console.log(provider);
 
     setProvider(provider);
-  }, [wallet?.provider])
-  
+  }, [wallet?.provider]);
 
   const [vaultInfo, setVaultInfo] = useState({
     tvl: new BigNumber(0),
     totalSupply: new BigNumber(0),
-    apy: 0,
 
     mainPoolAddress: "",
     mainPoolInfo: null,
@@ -71,7 +71,7 @@ const usePool = () => {
       return;
     }
 
-    console.log('fetching values .......................', wallet?.account);
+    console.log("fetching values .......................", wallet?.account);
     // await curve.init('JsonRpc', {}, {gasPrice: 0, maxFeePerGas: 0, maxPriorityFeePerGas: 0});
     // await curve.init(
     //   "Web3",
@@ -107,7 +107,6 @@ const usePool = () => {
     let mainLPTokenPrice = new BigNumber(0);
     let tvl = new BigNumber(0);
     let decimals = 0;
-    let apy = 0;
 
     const findIndex = addresses.contracts.curve_pools.findIndex(
       (pool) => pool.address.toLowerCase() === mainPoolAddress.toLowerCase()
@@ -124,12 +123,7 @@ const usePool = () => {
       );
       const stats = await mainPool.stats.getParameters();
 
-      console.log('stats', stats);
-
-      const apys = await mainPool.stats.getBaseApy();
-      apy = Number(apys.day);
-
-      
+      console.log("stats", stats);
 
       const mainLPTokenContract = new ethers.Contract(
         mainLPAddress,
@@ -146,10 +140,12 @@ const usePool = () => {
        * Calculate LP Price
        */
       const mainPoolTotalLiquidity = await mainPool.stats.getTotalLiquidity();
-      console.log('mainPoolTotalLiquidity', mainPoolTotalLiquidity);
+      console.log("mainPoolTotalLiquidity", mainPoolTotalLiquidity);
 
-      mainLPTokenPrice = new BigNumber(mainPoolTotalLiquidity).multipliedBy(10 ** decimals).dividedBy(mainLPTokenTotalSupply.toString());
-      console.log('lp token price', mainLPTokenPrice.toString())
+      mainLPTokenPrice = new BigNumber(mainPoolTotalLiquidity)
+        .multipliedBy(10 ** decimals)
+        .dividedBy(mainLPTokenTotalSupply.toString());
+      console.log("lp token price", mainLPTokenPrice.toString());
 
       // console.log('lb', vaultLPBalance, vaultLPBalance.toString(), mainLPTokenPrice.toString(), decimals);
 
@@ -161,15 +157,20 @@ const usePool = () => {
 
       underlyingCoins = [...mainPool.underlyingCoins];
       underlyingCoinAddresses = [...mainPool.underlyingCoinAddresses];
+
+      // if (addresses.contracts.curve_pools[findIndex].name === "tricrypto2") {
+      //   underlyingCoins[2] = "WETH";
+      //   underlyingCoinAddresses[2] = WETH;
+      // }
+
       coins = [...mainPool.coins];
     }
-    const userLiquidity = tvl.multipliedBy(sharedPercentage).dividedBy(100)
+    const userLiquidity = tvl.multipliedBy(sharedPercentage).dividedBy(100);
     mixpanel.people.set({ balance: userLiquidity.toString() });
     mixpanel.people.set({ "curve-apy-chaser": userLiquidity.toString() });
     setVaultInfo({
       tvl,
       totalSupply,
-      apy,
 
       mainPoolAddress,
       mainPoolInfo:
@@ -189,29 +190,22 @@ const usePool = () => {
       coins,
     });
 
-    console.log(vaultInfo)
+    console.log(vaultInfo);
   };
 
   useEffect(() => {
     fetchVaultInfo();
   }, [wallet, provider]);
 
-  /***
-   * Add Liquidity
-   */
-  const addLiquidity = async (
+  const calculateDepositParams = async (
     depositToken,
     depositAmount,
-    onSuccess = (res) => {},
-    onError = (e) => {}
+    slippage = SLIPPAGE
   ) => {
     const signer = provider.getSigner();
-    // const signer = provider.getSigner(wallet.account);
-
-    let errorFlag = false;
 
     console.log(vaultInfo);
-    console.log('deposit input params-----------------');
+    console.log("deposit input params-----------------");
     console.log(depositToken, depositAmount);
 
     // Token symbol which is using for adding liquidity
@@ -230,144 +224,88 @@ const usePool = () => {
     let swapOutputTokenSymbol = "";
     let swapOutputTokenDecimals = "";
 
-    try {
-      if (shouldSwap) {
-        const baseToken =
-          depositToken.address == VETH ? "WETH" : depositToken.symbol;
-        const swapAmount = new BigNumber(depositAmount.value.toString())
-          .dividedBy(10 ** depositToken.decimals)
-          .toString();
-        console.log(baseToken, swapAmount);
+    if (shouldSwap) {
+      const baseToken =
+        depositToken.address == VETH ? "WETH" : depositToken.symbol;
+      const swapAmount = new BigNumber(depositAmount.value.toString())
+        .dividedBy(10 ** depositToken.decimals)
+        .toString();
+      console.log(baseToken, swapAmount);
 
-        let { route, output } = await curve.getBestRouteAndOutput(
-          baseToken,
-          vaultInfo.underlyingCoins[0],
-          swapAmount
-        );
+      let { route, output } = await curve.getBestRouteAndOutput(
+        baseToken,
+        vaultInfo.underlyingCoins[0],
+        swapAmount
+      );
 
-        console.log("swap result ************************");
-        console.log(route, output);
+      console.log("swap result ************************");
+      console.log(route, output);
 
-        if (route.length === 0) {
-          onError({
-            message: "Can not swap",
-          });
-          return;
+      if (depositToken.address === VETH) {
+        if (route[0].poolId === "tricrypto2") {
+          swapRoute.push([VETH, WETH, 0, 1, false, false]);
         }
-        if (depositToken.address === VETH) {
-          if (route[0].poolId === "tricrypto2") {
-            swapRoute.push([VETH, WETH, 0, 1, false, false]);
-          }
-        } else if (depositToken.address === WETH) {
-          swapRoute.push([WETH, VETH, 1, 0, false, false]);
-        }
-
-        for (let i = 0; i < route.length; i++) {
-          if (route[i].poolAddress === vaultInfo.mainPoolAddress) {
-            break;
-          }
-
-          const isUnderlying =
-            route[i].swapType === 2 || route[i].swapType === 4 ? true : false;
-          const isCryptoPool =
-            route[i].swapType === 3 || route[i].swapType === 4 ? true : false;
-
-          swapRoute.push([
-            route[i].poolAddress,
-            route[i].outputCoinAddress,
-            route[i].i,
-            route[i].j,
-            isUnderlying,
-            isCryptoPool,
-          ]);
-        }
-
-        console.log("swapRoute param", swapRoute);
-
-        const lastToken = swapRoute[swapRoute.length - 1][1];
-        const lastTokenContract = new ethers.Contract(
-          lastToken,
-          ERC20_ABI,
-          signer
-        );
-
-        swapOutputTokenSymbol = await lastTokenContract.symbol();
-        swapOutputTokenDecimals = await lastTokenContract.decimals();
-
-        console.log(
-          "last token info",
-          swapOutputTokenSymbol,
-          swapOutputTokenDecimals
-        );
-
-        if (swapOutputTokenSymbol !== vaultInfo.underlyingCoins[0]) {
-          output = await curve.routerExchangeExpected(
-            baseToken,
-            swapOutputTokenSymbol,
-            swapAmount
-          );
-        }
-
-        console.log("Final swap params -------------------------------------");
-        console.log(swapRoute.toString());
-        console.log(swapRoute);
-        console.log(swapOutputTokenSymbol, swapOutputTokenDecimals, output);
-
-        expectedSwapAmount = new BigNumber(output);
-
-        console.log("-------------------------------------------------------");
+      } else if (depositToken.address === WETH) {
+        swapRoute.push([WETH, VETH, 1, 0, false, false]);
       }
-    } catch (e) {
-      errorFlag = true;
-      onError(e);
-    }
 
-    if (errorFlag) {
-      return;
-    }
+      for (let i = 0; i < route.length; i++) {
+        if (route[i].poolAddress === vaultInfo.mainPoolAddress) {
+          break;
+        }
 
-    // Check Allowance
-    let approveHash: string | undefined;
-    if (depositToken.address !== VETH) {
-      const depositTokenContract = new ethers.Contract(
-        depositToken.address,
+        const isUnderlying =
+          route[i].swapType === 2 || route[i].swapType === 4 ? true : false;
+        const isCryptoPool =
+          route[i].swapType === 3 || route[i].swapType === 4 ? true : false;
+
+        swapRoute.push([
+          route[i].poolAddress,
+          route[i].outputCoinAddress,
+          route[i].i,
+          route[i].j,
+          isUnderlying,
+          isCryptoPool,
+        ]);
+      }
+
+      console.log("swapRoute param", swapRoute);
+
+      const lastToken = swapRoute[swapRoute.length - 1][1];
+      const lastTokenContract = new ethers.Contract(
+        lastToken,
         ERC20_ABI,
         signer
       );
-      const allowance = await depositTokenContract.allowance(
-        wallet.account,
-        apy_vault_pool
+
+      swapOutputTokenSymbol = await lastTokenContract.symbol();
+      swapOutputTokenDecimals = await lastTokenContract.decimals();
+
+      console.log(
+        "last token info",
+        swapOutputTokenSymbol,
+        swapOutputTokenDecimals
       );
 
-      console.log("allowance", allowance.toString());
-      if (compare(allowance, 0) <= 0) {
-        let approvalEstimationGas =
-          await depositTokenContract.estimateGas.approve(
-            apy_vault_pool,
-            MAX_AMOUNT
-          );
-        approvalEstimationGas = approvalEstimationGas.add(
-          approvalEstimationGas.div(GAS_MULTIPLIER)
+      if (swapOutputTokenSymbol !== vaultInfo.underlyingCoins[0]) {
+        output = await curve.routerExchangeExpected(
+          baseToken,
+          swapOutputTokenSymbol,
+          swapAmount
         );
+      }
 
-        console.log("approve estimate gas", approvalEstimationGas.toString());
+      console.log("Final swap params -------------------------------------");
+      console.log(swapRoute.toString());
+      console.log(swapRoute);
+      console.log(swapOutputTokenSymbol, swapOutputTokenDecimals, output);
 
-        // Approve
-        try {
-          const { hash } = await depositTokenContract.approve(
-            apy_vault_pool,
-            MAX_AMOUNT,
-            { gasLimit: approvalEstimationGas }
-          );
-          approveHash = hash;
+      expectedSwapAmount = new BigNumber(output);
 
-          if (approveHash) {
-            await provider.waitForTransaction(approveHash);
-          }
-        } catch (e) {
-          errorFlag = true;
-          onError(e);
-        }
+      console.log("-------------------------------------------------------");
+    } else {
+      if (vaultInfo.mainPoolInfo.name === "tricrypto2" && depositToken.address === VETH) {
+        swapRoute.push([VETH, WETH, 0, 1, false, false]);
       }
     }
 
@@ -420,27 +358,6 @@ const usePool = () => {
     const vaultLPBalance = await mainLPTokenContract.balanceOf(apy_vault_pool);
     console.log("vault lp balance", vaultLPBalance.toString());
 
-    /**
-     * ---------------------------------------------------------------------------
-     */
-    // const vaultContract2 = new ethers.Contract(
-    //   apy_vault_pool,
-    //   VAULT_ABI2,
-    //   signer
-    // );
-
-    // const estimate = await vaultContract2.deposit(
-    //   "0xdAC17F958D2ee523a2206206994597C13D831ec7", //depositToken.address,
-    //   ethers.BigNumber.from(depositAmount.value.toString()),
-    //   3,
-    //   swapRoute,
-    //   0
-    // );
-    // console.log('aaa estimate', estimate.toString())
-    /**
-     * ---------------------------------------------------------------------------
-     */
-
     // total supply
     const vaultContract = new ethers.Contract(
       apy_vault_pool,
@@ -451,51 +368,130 @@ const usePool = () => {
     console.log("vault total supply", totalSupply.toString());
 
     // calculate expected balance
-    // expected balance = [expected lp balance] * [vault lp balance] / [total supply] * [slippage]
-    const expectedBalanceTemp = totalSupply.isZero()
+    // expected balance = [expected lp balance] * [total supply] / [vault lp balance] * [slippage]
+    const expectedBalance = totalSupply.isZero()
       ? new BigNumber(0)
       : new BigNumber(expectedLpTokenAmount.toString())
-          .multipliedBy(new BigNumber(vaultLPBalance.toString()))
-          .multipliedBy(SLIPPAGE)
-          .dividedBy(new BigNumber(totalSupply.toString()))
+          .multipliedBy(10 ** vaultInfo.mainLPDecimals)
+          .multipliedBy(new BigNumber(totalSupply.toString()))
+          .multipliedBy(slippage)
+          .dividedBy(new BigNumber(vaultLPBalance.toString()))
           .dividedBy(SLIPPAGE_DOMINATOR)
-          .decimalPlaces(0, 1)
-    console.log(
-      "expectedBalanceTemp",
-      expectedBalanceTemp,
-      expectedBalanceTemp.toString()
-    );
-    const expectedBalance = ethers.utils.parseUnits(
-      expectedBalanceTemp.toString(),
-      vaultInfo.mainLPDecimals
-    );
+          .decimalPlaces(0, 1);
+
     console.log("expectedBalance", expectedBalance.toString());
 
-    /**
-     * ---------------------------------------------
-     * Add Liquidity
-     * ---------------------------------------------
-     */
-    console.log("minting params -------------");
-    console.log(
-      depositToken.address,
-      depositAmount.value.toString(),
-      mainUnderlyingTokenIndex.toString(),
-      expectedBalance.toString()
-    );
-
-    let depositEstimationGas;
+    return {
+      vaultContract,
+      mainToken,
+      mainUnderlyingTokenIndex,
+      expectedBalance,
+      swapRoute,
+    };
+  };
+  /***
+   * Add Liquidity
+   */
+  const addLiquidity = async (
+    depositToken,
+    depositAmount,
+    onSuccess = (res) => {},
+    onError = (e) => {},
+    onWait = (res) => {}
+  ) => {
     try {
-      depositEstimationGas = await vaultContract.estimateGas.deposit(
-        depositToken.address,
-        ethers.BigNumber.from(depositAmount.value.toString()),
+      const signer = provider.getSigner();
+
+      const params = await calculateDepositParams(depositToken, depositAmount);
+
+      const {
+        vaultContract,
         mainUnderlyingTokenIndex,
+        expectedBalance,
         swapRoute,
-        expectedBalance.toString(),
+      } = params;
+
+      // if (swapRoute.length === 0) {
+      //   onError({
+      //     message: "Can not swap",
+      //   });
+      //   return;
+      // }
+
+      /**
+       * Check Allowance
+       */
+      let approveHash: string | undefined;
+      if (depositToken.address !== VETH) {
+        const depositTokenContract = new ethers.Contract(
+          depositToken.address,
+          ERC20_ABI,
+          signer
+        );
+        const allowance = await depositTokenContract.allowance(
+          wallet.account,
+          apy_vault_pool
+        );
+
+        console.log("allowance", allowance.toString());
+        if (compare(allowance, 0) <= 0) {
+          let approvalEstimationGas =
+            await depositTokenContract.estimateGas.approve(
+              apy_vault_pool,
+              MAX_AMOUNT
+            );
+          approvalEstimationGas = approvalEstimationGas.add(
+            approvalEstimationGas.div(GAS_MULTIPLIER)
+          );
+
+          console.log("approve estimate gas", approvalEstimationGas.toString());
+
+          // Approve
+          const { hash } = await depositTokenContract.approve(
+            apy_vault_pool,
+            MAX_AMOUNT,
+            { gasLimit: approvalEstimationGas }
+          );
+          approveHash = hash;
+
+          const estimateTime = await getEstimateTime(provider, hash);
+          console.log('Approve estimateTime', estimateTime);
+
+          onWait({ estimateTime, txHash: approveHash });
+
+          if (approveHash) {
+            await provider.waitForTransaction(approveHash);
+          }
+        }
+      }
+      /**
+       * ---------------------------------------------
+       * Add Liquidity
+       * ---------------------------------------------
+       */
+
+      console.log("minting params -------------");
+
+      console.log(
+        depositToken.address,
+        depositAmount.value.toString(),
+        ethers.utils.parseUnits(depositAmount.value.toString(10), "wei"),
+        mainUnderlyingTokenIndex.toString(),
+        ethers.utils.parseUnits(expectedBalance.toString(10), "wei"),
+        swapRoute
+      );
+      console.log("minting params ------------- end");
+
+      let depositEstimationGas = await vaultContract.estimateGas.deposit(
+        depositToken.address,
+        ethers.utils.parseUnits(depositAmount.value.toString(10), "wei"),
+        mainUnderlyingTokenIndex.toString(),
+        swapRoute,
+        ethers.utils.parseUnits(expectedBalance.toString(10), "wei"),
         {
           value:
             depositToken.address === VETH
-              ? ethers.BigNumber.from(depositAmount.value.toString())
+              ? ethers.utils.parseUnits(depositAmount.value.toString(10), "wei")
               : ethers.BigNumber.from(0),
           from: wallet.account,
         }
@@ -506,23 +502,19 @@ const usePool = () => {
       );
 
       console.log("deposit estimate gas", depositEstimationGas.toString());
-    } catch (e) {
-      errorFlag = true;
-    }
 
-    let depositHash: string | undefined;
-    // Deposit
-    try {
+      let depositHash: string | undefined;
+      // Deposit
       const { hash } = await vaultContract.deposit(
         depositToken.address,
-        ethers.BigNumber.from(depositAmount.value.toString()),
-        mainUnderlyingTokenIndex,
+        ethers.utils.parseUnits(depositAmount.value.toString(10), "wei"),
+        mainUnderlyingTokenIndex.toString(),
         swapRoute,
-        expectedBalance.toString(),
+        ethers.utils.parseUnits(expectedBalance.toString(10), "wei"),
         {
           value:
             depositToken.address === VETH
-              ? ethers.BigNumber.from(depositAmount.value.toString())
+              ? ethers.utils.parseUnits(depositAmount.value.toString(10), "wei")
               : ethers.BigNumber.from(0),
           from: wallet.account,
           gasLimit: depositEstimationGas,
@@ -530,20 +522,24 @@ const usePool = () => {
       );
       depositHash = hash;
       console.log("deposit hash", depositHash);
+
+      const estimateTime = await getEstimateTime(provider, hash);
+      console.log('Deposit estimateTime', estimateTime);
+
+      onWait({ estimateTime, txHash: depositHash });
+
       if (depositHash) {
         await provider.waitForTransaction(depositHash);
       }
-    } catch (e) {
-      errorFlag = true;
-      onError(e);
-    }
 
-    if (!errorFlag) {
       onSuccess({
         token: depositToken,
         amount: depositAmount.value,
         txHash: depositHash,
       });
+    } catch (e) {
+      console.log(e);
+      onError(e);
     }
   };
 
@@ -551,7 +547,8 @@ const usePool = () => {
     withdrawToken,
     withdrawPercentage,
     onSuccess = (res) => {},
-    onError = (e) => {}
+    onError = (e) => {},
+    onWait = (res) => {}
   ) => {
     try {
       console.log(vaultInfo);
@@ -624,6 +621,10 @@ const usePool = () => {
         }
 
         console.log("swap route", swapRoute);
+      } else {
+        if (vaultInfo.mainPoolInfo.name === "tricrypto2" && withdrawToken.address === VETH) {
+          swapRoute.push([WETH, VETH, 1, 0, false, false]);
+        }
       }
 
       const mainUnderlyingTokenIndex = vaultInfo.underlyingCoins.findIndex(
@@ -653,34 +654,44 @@ const usePool = () => {
         userBalance.toString(),
         removeBalance.toString()
       );
+      
+      let targetToken = vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex];
+      if (vaultInfo.mainPoolInfo.name === "tricrypto2" && withdrawToken.address === VETH) {
+        targetToken = WETH;
+      }
+
+      console.log("withdraw params ************************");
+      console.log(
+        targetToken,
+        removeBalance.toString(),
+        mainUnderlyingTokenIndex,
+        swapRoute,
+      );
 
       const expectedAmount = await tempContract.withdraw(
-        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        targetToken,
         removeBalance.toString(),
         mainUnderlyingTokenIndex,
         swapRoute,
         0
       );
+
       console.log("expectedAmount", expectedAmount, expectedAmount.toString());
       const minAmount = expectedAmount.mul(995).div(1000);
 
+      if (expectedAmount.toString() === "0") {
+        onError(null);
+        return;
+      }
+      
       const vaultContract = new ethers.Contract(
         apy_vault_pool,
         VAULT_ABI,
         signer
       );
 
-      console.log("withdraw params ************************");
-      console.log(
-        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
-        removeBalance.toString(),
-        mainUnderlyingTokenIndex,
-        swapRoute,
-        minAmount.toString()
-      );
-
       let withdrawEstimationGas = await vaultContract.estimateGas.withdraw(
-        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        targetToken,
         removeBalance.toString(),
         mainUnderlyingTokenIndex,
         swapRoute,
@@ -698,7 +709,7 @@ const usePool = () => {
 
       let withdrawHash: string | undefined;
       const { hash } = await vaultContract.withdraw(
-        vaultInfo.underlyingCoinAddresses[mainUnderlyingTokenIndex],
+        targetToken,
         removeBalance.toString(),
         mainUnderlyingTokenIndex,
         swapRoute,
@@ -710,6 +721,12 @@ const usePool = () => {
       );
       withdrawHash = hash;
       console.log("withdraw hash", withdrawHash);
+
+      const estimateTime = await getEstimateTime(provider, hash);
+      console.log('Withdraw estimateTime', estimateTime);
+
+      onWait({ estimateTime, txHash: withdrawHash });
+
       if (withdrawHash) {
         await provider.waitForTransaction(withdrawHash);
       }
@@ -729,6 +746,8 @@ const usePool = () => {
     fetchVaultInfo,
     addLiquidity,
     withdrawLiquidity,
+
+    calculateDepositParams
   };
 };
 

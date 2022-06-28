@@ -71,7 +71,7 @@ const DepositAmountInput = ({
                 {availableTokens.map((token) => (
                   <TokenItem
                     token={token}
-                    balance={formatBalance(token.balance, 4, token.decimals)}
+                    balance={formatBalance(token.balance, 2, token.decimals)}
                     onSelectToken={(token) => onSelectToken(token)}
                     key={`deposit-token-list-${token.symbol}`}
                   />
@@ -100,7 +100,7 @@ const DepositAmountInput = ({
       <div className="balance-section">
         <span>{`Balance: ${formatBalance(
           selectedToken.balance,
-          4,
+          2,
           selectedToken.decimals
         )}`}</span>
         <Button

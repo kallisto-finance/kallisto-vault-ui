@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import BigNumber from "bignumber.js";
 
 import Button from "components/Button";
 import AmountView from "components/AmountView";
-import { LoadingSpinner } from "components/LoadingIcon";
+import { LoadingSpinner, LoadingTriple } from "components/LoadingIcon";
 
-import { formatBalance, isNaN } from "utils/number";
+import { formatBalance } from "utils/number";
 
 import cn from "classnames";
 
@@ -19,10 +19,36 @@ const DepositConfirm = ({
   onBack,
   onConfirmDeposit,
   loading,
+  calcExpectedPercentage,
 }) => {
-  const expectedPoolShare = useMemo(() => {
-    return vaultInfo.sharedPercentage;
-  }, [vaultInfo, depositAmount]);
+  const [expectedPoolShare, setExpectedPoolShare] = useState("0");
+  const [calculating, setCalculating] = useState(false);
+
+  useEffect(() => {
+    const getPoolShare = async () => {
+      setCalculating(true);
+      const params = await calcExpectedPercentage(
+        selectedToken,
+        depositAmount,
+        1000
+      );
+      const expectedBalance = params.expectedBalance;
+
+      const newBalance = new BigNumber(vaultInfo.userBalance.toString())
+        .plus(expectedBalance.toString())
+        .multipliedBy(100)
+        .dividedBy(
+          new BigNumber(vaultInfo.totalSupply.toString()).plus(
+            expectedBalance.toString()
+          )
+        );
+
+      setExpectedPoolShare(newBalance.toFixed(2));
+      setCalculating(false);
+    };
+
+    getPoolShare();
+  }, [vaultInfo, selectedToken, depositAmount]);
 
   return (
     <div className="liquidity-view-wrapper deposit-confirm">
@@ -37,7 +63,7 @@ const DepositConfirm = ({
       <div className="liquidation-view-content">
         <div className="view-subtitle">Amount</div>
         <AmountView
-          value={formatBalance(depositAmount.value, 4, selectedToken.decimals)}
+          value={formatBalance(depositAmount.value, 2, selectedToken.decimals)}
           icon={selectedToken.img}
           iconBack={true}
           button={
@@ -47,7 +73,13 @@ const DepositConfirm = ({
           }
         />
         <div className="view-subtitle">Your % of the Pool*</div>
-        <AmountView value={`${expectedPoolShare} %`} />
+        {calculating ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <LoadingTriple />
+          </div>
+        ) : (
+          <AmountView value={`${expectedPoolShare} %`} />
+        )}
         <div className="view-help mt-2">
           <div className="view-help-text">*This rate is dynamic.</div>
           {/* <div className="view-help-text">
@@ -60,7 +92,7 @@ const DepositConfirm = ({
         </div>
       </div>
       <div
-        className={cn("view-footer", { success: !loading, amount: loading })}
+        className={cn("view-footer", { success: !loading && !calculating, amount: loading || calculating })}
         onClick={(e) => {
           if (loading) return;
           mixpanel.track("CONFIRM_DEPOSIT");
