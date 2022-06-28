@@ -83,7 +83,7 @@ export default function Home({ state, router, apy }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const apy = await getAPY();
 
   return { props: { apy } }
