@@ -19,7 +19,7 @@ import { formatBalance, toBalance } from "utils/number";
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
-const Liquidity = ({ router, curveAPY }) => {
+const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
   const { wallet } = useWallet();
 
   const getQueryParam = (url, param) => {
@@ -167,6 +167,12 @@ const Liquidity = ({ router, curveAPY }) => {
             hash={txHash}
           />
         );
+
+        // Show Confetti
+        onConfettiStart();
+        setTimeout(() => {
+          onConfettiStop();
+        }, 5000);
       },
       (e) => {
         toast.dismiss();
@@ -189,18 +195,20 @@ const Liquidity = ({ router, curveAPY }) => {
 
         const { estimateTime, txHash } = res;
 
-        const minutes = Math.ceil(Number(estimateTime) / 60)
+        const minutes = Math.ceil(Number(estimateTime) / 60);
 
         toast(
           <TransactionFeedbackToast
-            status="success"
+            status="wait"
             msg={`Your transaction is being confirmed...`}
             hash={txHash}
-            linkText={`Estimated Duration: < ${minutes} min${minutes > 1 ? 's' : ''}`}
+            linkText={`Estimated Duration: < ${minutes} min${
+              minutes > 1 ? "s" : ""
+            }`}
           />,
           {
             autoClose: false,
-            closeButton: false
+            closeButton: false,
           }
         );
       }
@@ -296,18 +304,20 @@ const Liquidity = ({ router, curveAPY }) => {
 
         const { estimateTime, txHash } = res;
 
-        const minutes = Math.ceil(Number(estimateTime) / 60)
+        const minutes = Math.ceil(Number(estimateTime) / 60);
 
         toast(
           <TransactionFeedbackToast
-            status="success"
+            status="wait"
             msg={`Your transaction is being confirmed...`}
             hash={txHash}
-            linkText={`Estimated Duration: < ${minutes} min${minutes > 1 ? 's' : ''}`}
+            linkText={`Estimated Duration: < ${minutes} min${
+              minutes > 1 ? "s" : ""
+            }`}
           />,
           {
             autoClose: false,
-            closeButton: false
+            closeButton: false,
           }
         );
       }
