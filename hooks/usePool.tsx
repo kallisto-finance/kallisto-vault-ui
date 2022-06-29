@@ -132,9 +132,8 @@ const usePool = () => {
 
       decimals = await mainLPTokenContract.decimals();
       const mainLPTokenTotalSupply = await mainLPTokenContract.totalSupply();
-      const vaultLPBalance = await mainLPTokenContract.balanceOf(
-        apy_vault_pool
-      );
+      
+      const vaultLPBalance = await contract.liquidity();
 
       /**
        * Calculate LP Price
@@ -348,16 +347,6 @@ const usePool = () => {
      * Calculate expected balance including slippage start
      * ---------------------------------------------
      */
-    const mainLPTokenContract = new ethers.Contract(
-      vaultInfo.mainLPAddress,
-      ERC20_ABI,
-      signer
-    );
-
-    // lp balance of vault
-    const vaultLPBalance = await mainLPTokenContract.balanceOf(apy_vault_pool);
-    console.log("vault lp balance", vaultLPBalance.toString());
-
     // total supply
     const vaultContract = new ethers.Contract(
       apy_vault_pool,
@@ -366,6 +355,10 @@ const usePool = () => {
     );
     const totalSupply = await vaultContract.totalSupply();
     console.log("vault total supply", totalSupply.toString());
+
+    // lp balance of vault
+    const vaultLPBalance = await vaultContract.liquidity();
+    console.log("vault lp balance", vaultLPBalance.toString());
 
     // calculate expected balance
     // expected balance = [expected lp balance] * [total supply] / [vault lp balance] * [slippage]
