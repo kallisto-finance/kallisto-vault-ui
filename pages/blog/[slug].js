@@ -105,7 +105,7 @@ export async function getStaticProps({ params }) {
   }
 
   mixpanel.track('VISIT_BLOGPOST', {
-    title: post.title,
+    title: post.content.title,
     slug: post.slug
   });
 
