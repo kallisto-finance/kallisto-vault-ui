@@ -10,6 +10,9 @@ import {
   parseDate
 } from "utils/date";
 
+import mixpanel from "mixpanel-browser";
+mixpanel.init(process.env.MIXPANEL_API_KEY)
+
 const UpcomingEvent = ({ data }) => {
   const [remainTime, setRemainTime] = useState(" ");
 
@@ -43,16 +46,45 @@ const UpcomingEvent = ({ data }) => {
 
   const registerLink = useMemo(() => {
     if (!("RegistrationLink" in data.content)) {
-      return "";
+      return null;
     }
     const registrationLink = data.content.RegistrationLink;
 
     if (registrationLink !== null) {
-      return registrationLink.url;
+      return {
+        url: registrationLink.url,
+        title: data.content.Title,
+        slug: data.slug,
+      };
     }
 
-    return "";
+    return null;
   }, [data]);
+
+  const openRegistration = () => {
+    console.log('click');
+
+    mixpanel.track('REGISTER_EVENT', registerLink);
+    window.location = registerLink.url;
+    // mixpanel.track('VISIT_BLOGPOST', {
+    //   title: data.content.title,
+    //   slug: data.slug
+    // });
+  }
+
+  const openCal = () => {
+    console.log('click');
+
+    mixpanel.track('ADD_EVENT_CALENDAR', {
+      title: data.content.Title
+    });
+
+    window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
+    // mixpanel.track('VISIT_BLOGPOST', {
+    //   title: data.content.title,
+    //   slug: data.slug
+    // });
+  }
 
   return (
     <div className="event-item-container">
@@ -87,6 +119,7 @@ const UpcomingEvent = ({ data }) => {
           <span>Join us in</span>
           <div className="event-countdown">{remainTime}</div>
           <a
+            onClick={(e) => openCal()}
             href={`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`}
             className="event-add-calendar"
             target="_blank"
@@ -124,8 +157,8 @@ const UpcomingEvent = ({ data }) => {
               ),
             },
           })}
-          {registerLink !== "" && (
-            <a href={registerLink} className="event-register" target="_blank">
+          {registerLink !== null && (
+            <a onClick={(e) => openRegistration()} className="event-register" target="_blank">
               Register
             </a>
           )}
