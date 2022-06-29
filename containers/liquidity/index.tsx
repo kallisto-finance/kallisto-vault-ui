@@ -155,7 +155,9 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
           value: new BigNumber(0),
           format: "0.00",
         });
-        mixpanel.track("COMPLETED_DEPOSIT");
+        mixpanel.track("COMPLETED_DEPOSIT", {balance: amount});
+        mixpanel.people.set({ balance: amount });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -178,6 +180,7 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         toast.dismiss();
 
         console.log("error", e);
+        mixpanel.track("FAILED_DEPOSIT", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
@@ -270,7 +273,9 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         fetchTokenBalances();
         setStep(0);
         setWithdrawPercentage(50);
-        mixpanel.track("COMPLETED_WITHDRAWAL");
+        mixpanel.track("COMPLETED_WITHDRAWAL", {balance: `-${amount}`});
+        mixpanel.people.set({ balance: `-${amount}` });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -287,6 +292,7 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         toast.dismiss();
 
         console.log("error", e);
+        mixpanel.track("FAILED_WITHDRAWAL", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
