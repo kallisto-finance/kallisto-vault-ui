@@ -149,9 +149,9 @@ const Liquidity = ({ router }) => {
           value: new BigNumber(0),
           format: "0.00",
         });
-        mixpanel.track("COMPLETED_DEPOSIT", {balance: depositAmount});
-        mixpanel.people.set({ balance: balance });
-        mixpanel.people.set({ "curve-apy-chaser-balance": balance });
+        mixpanel.track("COMPLETED_DEPOSIT", {balance: amount});
+        mixpanel.people.set({ balance: amount });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -231,8 +231,8 @@ const Liquidity = ({ router }) => {
         setStep(0);
         setWithdrawPercentage(50);
         mixpanel.track("COMPLETED_WITHDRAWAL", {balance: `-${amount}`});
-        mixpanel.people.set({ balance: `-${balance}` });
-        mixpanel.people.set({ "curve-apy-chaser-balance": balance });
+        mixpanel.people.set({ balance: `-${amount}` });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
