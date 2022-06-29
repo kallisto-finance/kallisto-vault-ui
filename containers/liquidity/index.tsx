@@ -166,6 +166,7 @@ const Liquidity = ({ router }) => {
       },
       (e) => {
         console.log("error", e);
+        mixpanel.track("FAILED_DEPOSIT", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
@@ -246,6 +247,7 @@ const Liquidity = ({ router }) => {
       },
       (e) => {
         console.log("error", e);
+        mixpanel.track("FAILED_WITHDRAWAL", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
