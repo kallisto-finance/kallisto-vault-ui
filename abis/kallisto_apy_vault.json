@@ -25,7 +25,8 @@
       { "name": "_token", "type": "address", "indexed": true },
       { "name": "_from", "type": "address", "indexed": true },
       { "name": "token_amount", "type": "uint256", "indexed": false },
-      { "name": "vault_balance", "type": "uint256", "indexed": false }
+      { "name": "vault_balance", "type": "uint256", "indexed": false },
+      { "name": "total_supply", "type": "uint256", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"
@@ -36,7 +37,8 @@
       { "name": "_token", "type": "address", "indexed": true },
       { "name": "_from", "type": "address", "indexed": true },
       { "name": "token_amount", "type": "uint256", "indexed": false },
-      { "name": "vault_balance", "type": "uint256", "indexed": false }
+      { "name": "vault_balance", "type": "uint256", "indexed": false },
+      { "name": "total_supply", "type": "uint256", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"
@@ -54,6 +56,34 @@
     "type": "event"
   },
   {
+    "name": "RewardCollected",
+    "inputs": [
+      { "name": "crv_collected", "type": "uint256", "indexed": false },
+      { "name": "added_balance", "type": "uint256", "indexed": false },
+      { "name": "_timestamp", "type": "uint256", "indexed": false }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "ManagementFeeCollected",
+    "inputs": [
+      { "name": "fee_amount", "type": "uint256", "indexed": false },
+      { "name": "_timestamp", "type": "uint256", "indexed": false }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "PerformanceFeeCollected",
+    "inputs": [
+      { "name": "fee_amount", "type": "uint256", "indexed": false },
+      { "name": "_timestamp", "type": "uint256", "indexed": false }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
     "stateMutability": "nonpayable",
     "type": "constructor",
     "inputs": [
@@ -63,6 +93,7 @@
       { "name": "_main_deposit", "type": "address" },
       { "name": "_main_pool_coin_count", "type": "uint8" },
       { "name": "_main_lp_token", "type": "address" },
+      { "name": "_main_liquidity_gauge", "type": "address" },
       { "name": "_is_crypto_pool", "type": "bool" }
     ],
     "outputs": []
@@ -200,17 +231,25 @@
       { "name": "new_i", "type": "int128" },
       { "name": "new_pool_coin_count", "type": "uint8" },
       { "name": "new_lp_token", "type": "address" },
+      { "name": "new_liquidity_gauge", "type": "address" },
       { "name": "new_is_crypto_pool", "type": "bool" },
       { "name": "new_lp_min_amount", "type": "uint256" }
     ],
-    "outputs": []
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "nonpayable",
     "type": "function",
-    "name": "make_fee",
-    "inputs": [{ "name": "amount", "type": "uint256" }],
-    "outputs": []
+    "name": "collect_crv_reward",
+    "inputs": [
+      {
+        "name": "swap_route",
+        "type": "(address,address,int128,int128,bool,bool)[]"
+      },
+      { "name": "i", "type": "int128" },
+      { "name": "min_amount", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -268,8 +307,29 @@
   {
     "stateMutability": "nonpayable",
     "type": "function",
+    "name": "set_main_liquidity_gauge",
+    "inputs": [{ "name": "_new_main_liquidity_gauge", "type": "address" }],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
     "name": "set_zap_deposit",
     "inputs": [{ "name": "_new_zap_deposit", "type": "address" }],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "set_management_fee",
+    "inputs": [{ "name": "_management_fee", "type": "uint16" }],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "set_performance_fee",
+    "inputs": [{ "name": "_performance_fee", "type": "uint16" }],
     "outputs": []
   },
   {
@@ -320,6 +380,13 @@
   {
     "stateMutability": "view",
     "type": "function",
+    "name": "liquidity",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
     "name": "paused",
     "inputs": [],
     "outputs": [{ "name": "", "type": "bool" }]
@@ -348,6 +415,20 @@
   {
     "stateMutability": "view",
     "type": "function",
+    "name": "management_fee",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint16" }]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "performance_fee",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint16" }]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
     "name": "main_deposit",
     "inputs": [],
     "outputs": [{ "name": "", "type": "address" }]
@@ -356,6 +437,13 @@
     "stateMutability": "view",
     "type": "function",
     "name": "main_lp_token",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "main_liquidity_gauge",
     "inputs": [],
     "outputs": [{ "name": "", "type": "address" }]
   },
