@@ -66,10 +66,6 @@ const UpcomingEvent = ({ data }) => {
 
     mixpanel.track('REGISTER_EVENT', registerLink);
     window.location = registerLink.url;
-    // mixpanel.track('VISIT_BLOGPOST', {
-    //   title: data.content.title,
-    //   slug: data.slug
-    // });
   }
 
   const openCal = () => {
@@ -80,10 +76,6 @@ const UpcomingEvent = ({ data }) => {
     });
 
     window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
-    // mixpanel.track('VISIT_BLOGPOST', {
-    //   title: data.content.title,
-    //   slug: data.slug
-    // });
   }
 
   return (
