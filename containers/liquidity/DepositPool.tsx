@@ -52,7 +52,8 @@ const DepositButton = ({ balance, maxBalance, onDeposit }) => {
 const DepositPoolContent = (props) => {
   const {
     vaultInfo,
-    curveAPY,
+    curvePoolAPY,
+    sevenDayVolume,
     selectedToken,
     tokenBalances,
     onSelectToken,
@@ -68,12 +69,12 @@ const DepositPoolContent = (props) => {
         <span>Active Pool</span>
       </div>
       <div className="liquidation-view-content">
-        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={curveAPY} />
-        {/* <AmountView
+        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={curvePoolAPY} />
+        <AmountView
           label="7 day Volume"
-          value="$0"
+          value={`$${sevenDayVolume}`}
           className="mt-2"
-        /> */}
+        />
         <AmountView
           label="Total Value Locked"
           value={`$${formatBalance(vaultInfo.tvl)}`}

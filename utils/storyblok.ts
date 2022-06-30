@@ -6,7 +6,10 @@ const Storyblok = new StoryblokClient({
 
 export const fetchBlogs = async () => {
   const blogs = [];
-  var response = await Storyblok.get("cdn/stories/");
+  var response = await Storyblok.get("cdn/stories/", {
+    // "per_page": 50,
+    "starts_with": "blog/"
+  });
 
   for (const story of response.data.stories) {
     if (story.published_at != null) {
@@ -28,7 +31,10 @@ export const fetchBlogs = async () => {
 
 export const fetchEvents = async () => {
   const events = [];
-  var response = await Storyblok.get("cdn/stories/");
+  var response = await Storyblok.get("cdn/stories/", {
+    // "per_page": 50,
+    "starts_with": "events/"
+  });
 
   for (const story of response.data.stories) {
     if (story.published_at != null) {
@@ -37,6 +43,6 @@ export const fetchEvents = async () => {
       }
     }
   }
-  console.log(events);
+  // console.log(events);
   return events;
 }

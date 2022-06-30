@@ -5,7 +5,7 @@ const port = process.env.REDIS_SERVER_PORT;
 const password = process.env.REDIS_SERVER_PASSWORD;
 const db = 0;
 
-export const getAPY = async () => {
+export const getPoolValues = async () => {
   const redis = new Redis({
     port,
     host,
@@ -14,8 +14,12 @@ export const getAPY = async () => {
   });
 
   const apy = await redis.get("APY");
+  const volume = await redis.get("volume");
 
   redis.quit();
 
-  return apy;
+  return {
+    apy,
+    volume
+  };
 };
