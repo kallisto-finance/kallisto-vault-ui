@@ -46,6 +46,14 @@ const LayoutHeader = ({ router }) => {
           <span>Join our Community</span>
           <img src="/assets/social/telegram.png" alt="Telegram" />
         </a>
+        <a
+          href="https://kallisto-finance.github.io/kallisto-docs/guide/abstract.html"
+          className="header-button"
+          target="_blank"
+        >
+          <span>Docs</span>
+          <img src="/assets/icons/open.svg" alt="Docs" />
+        </a>
         <ConnectWalletButton />
       </div>
     </div>

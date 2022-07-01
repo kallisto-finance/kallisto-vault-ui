@@ -85,7 +85,7 @@ const ConnectWalletButton = ({ className = "", children = null }) => {
                 href={`https://etherscan.io/address/${account}`}
                 target="_blank"
               >
-                <img className="circle" src="/assets/icons/open.png" />
+                <img className="circle" src="/assets/icons/open.svg" />
                 <span>View on Explorer</span>
               </a>
 

@@ -17,7 +17,7 @@ const TransactionFeedbackToast = ({
 }) => (
   <div className="transaction-toast-container">
     {status === "wait" ? (
-      <img className="transaction-toast-icon" src={`/assets/${status}.gif`} />
+      <img className="transaction-toast-icon" src={`/assets/loader.gif`} />
     ) : (
       <img className="transaction-toast-icon" src={`/assets/${status}.png`} />
     )}

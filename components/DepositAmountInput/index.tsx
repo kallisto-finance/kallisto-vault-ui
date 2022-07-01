@@ -32,7 +32,9 @@ const DepositAmountInput = ({
   const [showTokenList, setShowTokenList] = useState(false);
   const tokenListRef = useRef(null);
   useOutsideAlerter(tokenListRef, () => {
-    setShowTokenList(false);
+    setTimeout(() => {
+      setShowTokenList(false);
+    }, 200)
   });
 
   const availableTokens = useMemo(() => {
@@ -41,7 +43,6 @@ const DepositAmountInput = ({
         token.address.toLowerCase() !== selectedToken.address.toLowerCase() &&
         compare(token.balance, 0) > 0
     );
-    console.log(res);
     return res;
   }, [tokenBalances, selectedToken]);
 
@@ -51,33 +52,37 @@ const DepositAmountInput = ({
         border: showTokenList,
       })}
     >
+      {showTokenList && availableTokens.length > 0 && (
+        <div className="token-list-wrapper">
+          <div className="token-list-scroll-view">
+            {availableTokens.map((token) => (
+              <TokenItem
+                token={token}
+                balance={formatBalance(token.balance, 2, token.decimals)}
+                onSelectToken={(token) => onSelectToken(token)}
+                key={`deposit-token-list-${token.symbol}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       <div className="input-section">
         <div
           className="selected-token-wrapper"
-          onClick={(e) => setShowTokenList(!showTokenList)}
+          onClick={(e) => {
+            if (availableTokens.length > 0) {
+              setShowTokenList(!showTokenList)
+            }
+          }}
           ref={tokenListRef}
         >
           <img className="selected-token-icon" src={selectedToken.img} />
           <span className="selected-token-symbol">{selectedToken.name}</span>
-          {selectedToken.name !== "" && (
+          {selectedToken.name !== "" && availableTokens.length > 0 && (
             <img
               className="selected-token-arrow"
               src="/assets/arrows/arrow-down.svg"
             />
-          )}
-          {showTokenList && (
-            <div className="token-list-wrapper">
-              <div className="token-list-scroll-view">
-                {availableTokens.map((token) => (
-                  <TokenItem
-                    token={token}
-                    balance={formatBalance(token.balance, 2, token.decimals)}
-                    onSelectToken={(token) => onSelectToken(token)}
-                    key={`deposit-token-list-${token.symbol}`}
-                  />
-                ))}
-              </div>
-            </div>
           )}
         </div>
         <div className="input-wrapper">

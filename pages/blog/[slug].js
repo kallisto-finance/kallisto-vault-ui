@@ -111,6 +111,7 @@ export async function getStaticProps({ params }) {
 
   // Pass post data to the page via props
   return { props: { post } };
+  mixpanel.track('VISIT_BLOGPOST_TEST', {title: fetchBlogs.posts.full_slug});
 }
 
 export default Blog;

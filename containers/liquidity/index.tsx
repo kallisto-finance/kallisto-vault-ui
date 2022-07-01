@@ -19,7 +19,7 @@ import { formatBalance, toBalance } from "utils/number";
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
 
-const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
+const Liquidity = ({ router, curvePoolAPY, sevenDayVolume, onConfettiStart, onConfettiStop }) => {
   const { wallet } = useWallet();
 
   const getQueryParam = (url, param) => {
@@ -155,7 +155,9 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
           value: new BigNumber(0),
           format: "0.00",
         });
-        mixpanel.track("COMPLETED_DEPOSIT");
+        mixpanel.track("COMPLETED_DEPOSIT", {balance: amount});
+        mixpanel.people.set({ balance: amount });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -178,6 +180,7 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         toast.dismiss();
 
         console.log("error", e);
+        mixpanel.track("FAILED_DEPOSIT", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
@@ -270,7 +273,9 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         fetchTokenBalances();
         setStep(0);
         setWithdrawPercentage(50);
-        mixpanel.track("COMPLETED_WITHDRAWAL");
+        mixpanel.track("COMPLETED_WITHDRAWAL", {balance: `-${amount}`});
+        mixpanel.people.set({ balance: `-${amount}` });
+        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
         toast(
           <TransactionFeedbackToast
             status="success"
@@ -287,6 +292,7 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         toast.dismiss();
 
         console.log("error", e);
+        mixpanel.track("FAILED_WITHDRAWAL", {error: e});
         if (e?.code === 4001) {
           toast(<TransactionFeedbackToast status="error" msg={e.message} />);
         } else {
@@ -334,7 +340,8 @@ const Liquidity = ({ router, curveAPY, onConfettiStart, onConfettiStop }) => {
         moveScrollToTop();
         setStep(1);
       }}
-      curveAPY={curveAPY}
+      curvePoolAPY={curvePoolAPY}
+      sevenDayVolume={sevenDayVolume}
       onSelectToken={(token) => handleSelectDepositToken(token)}
       onChangeDepositInputAmount={(value) => handleChangeDepositAmount(value)}
     />

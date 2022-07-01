@@ -10,7 +10,7 @@ import PoolInfo from "components/PoolInfo";
 
 import { LIQUIDITY_BALANCE_STATUS } from "types";
 
-import { isNaN, compare, formatBalance, toBalance } from "utils/number";
+import { isNaN, compare, formatBalance, toBalance, convertBalanceString } from "utils/number";
 import mixpanel from "mixpanel-browser";
 
 import cn from "classnames";
@@ -52,7 +52,8 @@ const DepositButton = ({ balance, maxBalance, onDeposit }) => {
 const DepositPoolContent = (props) => {
   const {
     vaultInfo,
-    curveAPY,
+    curvePoolAPY,
+    sevenDayVolume,
     selectedToken,
     tokenBalances,
     onSelectToken,
@@ -68,12 +69,12 @@ const DepositPoolContent = (props) => {
         <span>Active Pool</span>
       </div>
       <div className="liquidation-view-content">
-        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={curveAPY} />
-        {/* <AmountView
+        <PoolInfo pool={vaultInfo.mainPoolInfo} apy={curvePoolAPY} />
+        <AmountView
           label="7 day Volume"
-          value="$0"
+          value={`$${convertBalanceString(sevenDayVolume)}`}
           className="mt-2"
-        /> */}
+        />
         <AmountView
           label="Total Value Locked"
           value={`$${formatBalance(vaultInfo.tvl)}`}

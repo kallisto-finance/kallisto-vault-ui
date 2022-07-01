@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 
 import Liquidity from "containers/liquidity";
-import { getAPY } from 'utils/redis';
+import { getPoolValues } from "utils/redis";
 
 import mixpanel from "mixpanel-browser";
-mixpanel.init(process.env.MIXPANEL_API_KEY)
+mixpanel.init(process.env.MIXPANEL_API_KEY);
 
 const randomInRange = (min, max) => {
   return Math.random() * (max - min) + min;
@@ -34,8 +34,7 @@ const getAnimationSettings = (originXA, originXB) => {
   };
 };
 
-export default function Home({ state, router, apy }) {
-
+export default function Home({ state, router, apy, volume }) {
   const refAnimationInstance = useRef(null);
   const [intervalId, setIntervalId] = useState();
 
@@ -77,14 +76,20 @@ export default function Home({ state, router, apy }) {
 
   return (
     <div className="page-container">
-      <Liquidity router={router} curveAPY={apy} onConfettiStart={startAnimation} onConfettiStop={stopAnimation} />
+      <Liquidity
+        router={router}
+        curvePoolAPY={apy}
+        sevenDayVolume={volume}
+        onConfettiStart={startAnimation}
+        onConfettiStop={stopAnimation}
+      />
       <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
     </div>
   );
 }
 
 export async function getStaticProps() {
-  const apy = await getAPY();
+  const { apy, volume } = await getPoolValues();
 
-  return { props: { apy } }
+  return { props: { apy, volume } };
 }
