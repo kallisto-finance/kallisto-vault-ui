@@ -10,7 +10,7 @@ import PoolInfo from "components/PoolInfo";
 
 import { LIQUIDITY_BALANCE_STATUS } from "types";
 
-import { isNaN, compare, formatBalance, toBalance } from "utils/number";
+import { isNaN, compare, formatBalance, toBalance, convertBalanceString } from "utils/number";
 import mixpanel from "mixpanel-browser";
 
 import cn from "classnames";
@@ -72,7 +72,7 @@ const DepositPoolContent = (props) => {
         <PoolInfo pool={vaultInfo.mainPoolInfo} apy={curvePoolAPY} />
         <AmountView
           label="7 day Volume"
-          value={`$${sevenDayVolume}`}
+          value={`$${convertBalanceString(sevenDayVolume)}`}
           className="mt-2"
         />
         <AmountView

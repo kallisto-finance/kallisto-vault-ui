@@ -80,6 +80,12 @@ export const allowOnlyNumber = (value) => {
   return re.test(value);
 };
 
+export const convertBalanceString = (value) => {
+  const balance = new BigNumber(value.toString()).toFormat(1);
+
+  return balance;
+};
+
 export const formatBalance = (value, fixed = 2, decimals = 18) => {
   const balance = new BigNumber(value.toString())
     .div(10 ** decimals)
