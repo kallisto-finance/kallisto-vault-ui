@@ -155,9 +155,17 @@ const Liquidity = ({ router, curvePoolAPY, sevenDayVolume, onConfettiStart, onCo
           value: new BigNumber(0),
           format: "0.00",
         });
-        mixpanel.track("COMPLETED_DEPOSIT", {balance: amount});
-        mixpanel.people.set({ balance: amount });
-        mixpanel.people.set({ "curve-apy-chaser-balance": amount });
+
+        try {
+          let balance_amount = amount.toNumber();
+          mixpanel.track("COMPLETED_DEPOSIT", {balance: balance_amount});
+          mixpanel.people.set({balance: balance_amount});
+          mixpanel.people.set({"curve-apy-chaser-balance": balance_amount});
+        }
+        catch(err) {
+          console.log(err);
+        }
+
         toast(
           <TransactionFeedbackToast
             status="success"
