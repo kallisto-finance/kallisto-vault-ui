@@ -27,7 +27,7 @@ const UpcomingEvent = ({ data }) => {
         mixpanel.track('REGISTER_EVENT', registerLink);
         window.location = registerLink.url;
         regClicked = true;
-        $("#event-register").click(function() { });
+        $("#event-register").prop("onclick", null).off("click");
       }
     });
 
@@ -40,7 +40,7 @@ const UpcomingEvent = ({ data }) => {
 
         window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
         eventClicked = true;
-        $("#event-add-calendar").click(function() { });
+        $("#event-add-calendar").prop("onclick", null).off("click");
       }
     });
   })
