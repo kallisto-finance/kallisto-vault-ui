@@ -24,23 +24,21 @@ const UpcomingEvent = ({ data }) => {
     window.$ = window.jQuery = require('jquery');
     $("#event-register").click(function() {
       if(!regClicked) {
+        regClicked = true;
         mixpanel.track('REGISTER_EVENT', registerLink);
         window.location = registerLink.url;
-        regClicked = true;
-        $("#event-register").prop("onclick", null).off("click");
       }
     });
 
 
     $("#event-add-calendar").click(function() {
       if(!eventClicked) {
+        eventClicked = true;
         mixpanel.track('ADD_EVENT_CALENDAR', {
           title: data.content.Title
         });
 
         window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
-        eventClicked = true;
-        $("#event-add-calendar").prop("onclick", null).off("click");
       }
     });
   })
