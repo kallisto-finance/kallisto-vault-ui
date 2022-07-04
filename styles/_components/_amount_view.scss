@@ -47,8 +47,8 @@
     color: #b6b2ef;
     font-weight: 500;
     font-size: 16px;
-    width: 100px;
-    text-align: center;
+    width: 50%;
+    text-align: right;
 
     &.kujira {
       color: #D3483E;
@@ -64,6 +64,7 @@
     font-size: 30px;
     color: #f7fcfb;
     padding-left: 14px;
+    width: 50%;
 
     @media screen and (max-width: 768px) {
       font-size: 16px;
