@@ -10,11 +10,38 @@ import {
   parseDate
 } from "utils/date";
 
+
+
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY)
 
 const UpcomingEvent = ({ data }) => {
   const [remainTime, setRemainTime] = useState(" ");
+  let regClicked = false;
+  let eventClicked = false;
+
+  useEffect(() => {
+    window.$ = window.jQuery = require('jquery');
+    $("#event-register").click(function() {
+      if(!regClicked) {
+        mixpanel.track('REGISTER_EVENT', registerLink);
+        window.location = registerLink.url;
+        regClicked = true;
+      }
+    });
+
+
+    $("#event-add-calendar").click(function() {
+      if(!eventClicked) {
+        mixpanel.track('ADD_EVENT_CALENDAR', {
+          title: data.content.Title
+        });
+
+        window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
+        eventClicked = true;
+      }
+    });
+  })
 
   useEffect(() => {
     if (data.content.EventTime) {
@@ -111,7 +138,7 @@ const UpcomingEvent = ({ data }) => {
           <span>Join us in</span>
           <div className="event-countdown">{remainTime}</div>
           <a
-            onClick={(e) => openCal()}
+            id = "event-add-calendar"
             href={`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`}
             className="event-add-calendar"
             target="_blank"
@@ -150,7 +177,7 @@ const UpcomingEvent = ({ data }) => {
             },
           })}
           {registerLink !== null && (
-            <a onClick={(e) => openRegistration()} className="event-register" target="_blank">
+            <a className="event-register" id="event-register" target="_blank">
               Register
             </a>
           )}

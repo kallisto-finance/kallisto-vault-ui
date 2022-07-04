@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import { render, NODE_IMAGE } from "storyblok-rich-text-react-renderer";
 
@@ -11,7 +11,18 @@ import mixpanel from "mixpanel-browser";
 
 mixpanel.init(process.env.MIXPANEL_API_KEY)
 
-const Blog = ({ post }) => (
+
+const Blog = ({ post }) => {
+  useEffect(() => {
+    const res = mixpanel.track('VISIT_BLOGPOST', {
+      title: post.content.title,
+      slug: post.slug
+    });
+
+    console.log(res);
+  }, []);
+
+  return (
   <>
     {post !== null && post !== undefined && (
       <HeadSeo
@@ -71,8 +82,8 @@ const Blog = ({ post }) => (
         </div>
       )}
     </div>
-  </>
-);
+  </>);
+}
 
 // This function gets called at build time
 export async function getStaticPaths() {
@@ -104,14 +115,8 @@ export async function getStaticProps({ params }) {
     }
   }
 
-  mixpanel.track('VISIT_BLOGPOST', {
-    title: post.content.title,
-    slug: post.slug
-  });
-
   // Pass post data to the page via props
   return { props: { post } };
-  mixpanel.track('VISIT_BLOGPOST_TEST', {title: fetchBlogs.posts.full_slug});
 }
 
 export default Blog;
