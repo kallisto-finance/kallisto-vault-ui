@@ -118,7 +118,7 @@ export const TOKENS = [
 export const addresses = {
   curve_pool_icon_base_link: "https://curve.fi/static/icons/svg/crypto-icons-stack-2-ethereum.svg",
   contracts: {
-    apy_vault: process.env.KALLISTO_VAULT_ADDRESS,
+    apy_vault: process.env.CURVE_APY_VAULT,
     curve_pools: [
       {
         key: "TRIPOOL_INFO",
