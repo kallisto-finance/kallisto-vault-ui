@@ -95,6 +95,12 @@ export const formatBalance = (value, fixed = 2, decimals = 18) => {
   return balance;
 };
 
+export const formatBalanceNumber = (value, fixed = 2, decimals = 18) => {
+  const balance = formatBalance(value, fixed, decimals);
+
+  return parseFloat(balance);
+};
+
 export const toBalance = (value, fixed = 3, decimals = 6) => {
   const balance = new BigNumber(value.toString())
     .div(10 ** decimals)
@@ -106,7 +112,7 @@ export const toBalance = (value, fixed = 3, decimals = 6) => {
 
 export const getBalanceFromTokenList = (tokenAddress, tokenList) => {
   const findIndex = tokenList.findIndex((item) => item.address.toLowerCase() === tokenAddress.toLowerCase());
-  
+
   if (findIndex < 0) {
     return 0;
   }
