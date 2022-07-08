@@ -14,7 +14,7 @@ import { useWallet, usePool, useBalance } from "hooks";
 
 import { moveScrollToTop } from "utils/document";
 import { VETH } from "utils/constants";
-import { formatBalance, toBalance } from "utils/number";
+import {formatBalance, formatBalanceNumber, toBalance} from "utils/number";
 
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
@@ -157,9 +157,10 @@ const Liquidity = ({ router, curvePoolAPY, sevenDayVolume, onConfettiStart, onCo
         });
 
         try {
-          let balance_amount = amount.toNumber();
+          let balance_amount = formatBalanceNumber(amount);
           mixpanel.track("COMPLETED_DEPOSIT", {balance: balance_amount});
           mixpanel.people.set({balance: balance_amount});
+          mixpanel.people.set({amount: balance_amount});
           mixpanel.people.set({"curve-apy-chaser-balance": balance_amount});
         }
         catch(err) {
