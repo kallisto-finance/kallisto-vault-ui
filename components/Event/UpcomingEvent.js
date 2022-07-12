@@ -20,28 +20,34 @@ const UpcomingEvent = ({ data }) => {
   let regClicked = false;
   let eventClicked = false;
 
-  // useEffect(() => {
-  //   window.$ = window.jQuery = require('jquery');
-  //   $("#event-register").click(function() {
-  //     if(!regClicked) {
-  //       regClicked = true;
-  //       mixpanel.track('REGISTER_EVENT', registerLink);
-  //       window.location = registerLink.url;
-  //     }
-  //   });
+  useEffect(() => {
+    window.$ = window.jQuery = require('jquery');
+    $("#event-register").click(function() {
+      if(!regClicked) {
+        regClicked = true;
+        mixpanel.track('REGISTER_EVENT', {
+          title: $(this).attr('title'),
+          url: $(this).attr('href'),
+          slug: $(this).attr('slug'),
+        });
+
+        window.location = $(this).attr('href');
+      }
+    });
   //
   //
-  //   $("#event-add-calendar").click(function() {
-  //     if(!eventClicked) {
-  //       eventClicked = true;
-  //       mixpanel.track('ADD_EVENT_CALENDAR', {
-  //         title: data.content.Title
-  //       });
-  //
-  //       window.location = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`;
-  //     }
-  //   });
-  // })
+    $("#event-add-calendar").click(function() {
+      if(!eventClicked) {
+        eventClicked = true;
+        mixpanel.track('ADD_EVENT_CALENDAR', {
+          title: $(this).attr('title'),
+          slug: $(this).attr('slug'),
+        });
+
+        window.location = $(this).attr('href');
+      }
+    });
+  })
 
   useEffect(() => {
     if (data.content.EventTime) {
@@ -143,6 +149,8 @@ const UpcomingEvent = ({ data }) => {
               href={`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`}
               className="event-add-calendar"
               target="_blank"
+              slug={data.slug}
+              title={data.content.Title}
           >
             Add to Calendar
           </a>
@@ -178,7 +186,11 @@ const UpcomingEvent = ({ data }) => {
             },
           })}
           {registerLink.url !== "" && (
-              <a href={registerLink.url} className="event-register" target="_blank">
+              <a href={registerLink.url}
+                 slug={data.slug}
+                 title={data.content.Title}
+                 className="event-register"
+                 target="_blank">
                 Register
               </a>
           )}
