@@ -138,10 +138,9 @@ const UpcomingEvent = ({ data }) => {
           <span>Join us in</span>
           <div className="event-countdown">{remainTime}</div>
           <a
-            id = "event-add-calendar"
-            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`}
-            className="event-add-calendar"
-            target="_blank"
+              href={`https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${data.content.EventTime}&location=${data.content.Location}&text=${data.content.Title}`}
+              className="event-add-calendar"
+              target="_blank"
           >
             Add to Calendar
           </a>
@@ -177,9 +176,9 @@ const UpcomingEvent = ({ data }) => {
             },
           })}
           {registerLink !== null && (
-            <a className="event-register" id="event-register" target="_blank">
-              Register
-            </a>
+              <a href={registerLink} className="event-register" target="_blank">
+                Register
+              </a>
           )}
         </div>
       </div>
