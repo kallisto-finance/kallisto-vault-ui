@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 
 import Liquidity from "containers/liquidity";
-import { getPoolValues } from "utils/redis";
+import { fetchCurveVaultValues } from "utils/axios";
 
 import mixpanel from "mixpanel-browser";
 mixpanel.init(process.env.MIXPANEL_API_KEY);
@@ -34,7 +34,7 @@ const getAnimationSettings = (originXA, originXB) => {
   };
 };
 
-export default function Home({ state, router, apy, volume }) {
+export default function Home({ state, router }) {
   const refAnimationInstance = useRef(null);
   const [intervalId, setIntervalId] = useState();
 
@@ -72,24 +72,39 @@ export default function Home({ state, router, apy, volume }) {
     };
   }, [intervalId]);
 
+  const [curveApy, setCurveApy] = useState(0);
+  const [curve7DayVolume, setCurve7DayVolume] = useState(0);
+
+  useEffect(() => {
+    const getValues = async () => {
+      const data = await fetchCurveVaultValues();
+      setCurveApy(data.apy);
+      setCurve7DayVolume(data.volume);
+    }
+    
+    getValues();
+
+    let interval = setInterval(() => {
+      getValues();
+    }, 60 * 1000);
+
+    return () => {
+      clearInterval(interval);
+    }
+  }, [])
+
   mixpanel.track("VISIT");
 
   return (
     <div className="page-container">
       <Liquidity
         router={router}
-        curvePoolAPY={apy}
-        sevenDayVolume={volume}
+        curvePoolAPY={curveApy}
+        sevenDayVolume={curve7DayVolume}
         onConfettiStart={startAnimation}
         onConfettiStop={stopAnimation}
       />
       <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
     </div>
   );
-}
-
-export async function getStaticProps() {
-  const { apy, volume } = await getPoolValues();
-
-  return { props: { apy, volume } };
 }
