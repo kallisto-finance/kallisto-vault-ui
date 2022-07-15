@@ -80,26 +80,31 @@ const DepositPoolContent = (props) => {
           value={`$${formatBalance(vaultInfo.tvl)}`}
           className="mt-2"
         />
-        <div className="view-subtitle">
-          Select a token and add more liquidity
+        <div style={{ visibility: 'hidden' }}>
+          <div className="view-subtitle">
+            Select a token and add more liquidity
+          </div>
+          <DepositAmountInput
+            selectedToken={selectedToken}
+            tokenBalances={tokenBalances}
+            depositAmount={depositAmount}
+            onSelectToken={(token) => onSelectToken(token)}
+            onChangeDepositInputAmount={(value) =>
+              onChangeDepositInputAmount(value)
+            }
+            theme={""}
+            connectedWallet={() => {}}
+          />
         </div>
-        <DepositAmountInput
-          selectedToken={selectedToken}
-          tokenBalances={tokenBalances}
-          depositAmount={depositAmount}
-          onSelectToken={(token) => onSelectToken(token)}
-          onChangeDepositInputAmount={(value) =>
-            onChangeDepositInputAmount(value)
-          }
-          theme={""}
-          connectedWallet={() => {}}
+      </div>
+
+      <div style={{ visibility: 'hidden' }}>
+        <DepositButton
+          balance={depositAmount.value}
+          maxBalance={selectedToken.balance}
+          onDeposit={() => onDeposit()}
         />
       </div>
-      <DepositButton
-        balance={depositAmount.value}
-        maxBalance={selectedToken.balance}
-        onDeposit={() => onDeposit()}
-      />
     </div>
   );
 };
