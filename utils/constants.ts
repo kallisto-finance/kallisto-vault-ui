@@ -21,83 +21,85 @@ export const TOKENS = [
     img: "/assets/tokens/ETH.png",
     decimals: 18
   },
-  {
-    name: "CRV",
-    symbol: "CRV",
-    address: "0xD533a949740bb3306d119CC777fa900bA034cd52",
-    img: "/assets/tokens/CRV.png",
-    decimals: 18
-  },
-  {
-    name: "WETH",
-    symbol: "WETH",
-    address: WETH,
-    img: "/assets/tokens/WETH.png",
-    decimals: 18
-  },
-  {
-    name: "stETH",
-    symbol: "stETH",
-    address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-    img: "/assets/tokens/stETH.png",
-    decimals: 18
-  },
-  {
-    name: "USDT",
-    symbol: "USDT",
-    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    img: "/assets/tokens/USDT.png",
-    decimals: 6
-  },
-  {
-    name: "wBTC",
-    symbol: "wBTC",
-    address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-    img: "/assets/tokens/wBTC.png",
-    decimals: 8
-  },
-  {
-    name: "DAI",
-    symbol: "DAI",
-    address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    img: "/assets/tokens/DAI.png",
-    decimals: 18
-  },
-  {
-    name: "USDC",
-    symbol: "USDC",
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    img: "/assets/tokens/USDC.png",
-    decimals: 6
-  },
-  {
-    name: "renBTC",
-    symbol: "renBTC",
-    address: "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D",
-    img: "/assets/tokens/renBTC.png",
-    decimals: 8
-  },
-  {
-    name: "FRAX",
-    symbol: "FRAX",
-    address: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
-    img: "/assets/tokens/FRAX.png",
-    decimals: 18
-  },
-  {
-    name: "MIM",
-    symbol: "MIM",
-    address: "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
-    img: "/assets/tokens/MIM.png",
-    decimals: 18
-  },
-  {
-    name: "alETH",
-    symbol: "alETH",
-    address: "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
-    img: "/assets/tokens/alETH.png",
-    decimals: 18
-  },
+  // {
+  //   name: "CRV",
+  //   symbol: "CRV",
+  //   address: "0xD533a949740bb3306d119CC777fa900bA034cd52",
+  //   img: "/assets/tokens/CRV.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "WETH",
+  //   symbol: "WETH",
+  //   address: WETH,
+  //   img: "/assets/tokens/WETH.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "stETH",
+  //   symbol: "stETH",
+  //   address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+  //   img: "/assets/tokens/stETH.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "USDT",
+  //   symbol: "USDT",
+  //   address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  //   img: "/assets/tokens/USDT.png",
+  //   decimals: 6
+  // },
+  // {
+  //   name: "wBTC",
+  //   symbol: "wBTC",
+  //   address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+  //   img: "/assets/tokens/wBTC.png",
+  //   decimals: 8
+  // },
+  // {
+  //   name: "DAI",
+  //   symbol: "DAI",
+  //   address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  //   img: "/assets/tokens/DAI.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "USDC",
+  //   symbol: "USDC",
+  //   address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  //   img: "/assets/tokens/USDC.png",
+  //   decimals: 6
+  // },
+  // {
+  //   name: "renBTC",
+  //   symbol: "renBTC",
+  //   address: "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D",
+  //   img: "/assets/tokens/renBTC.png",
+  //   decimals: 8
+  // },
+  // {
+  //   name: "FRAX",
+  //   symbol: "FRAX",
+  //   address: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+  //   img: "/assets/tokens/FRAX.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "MIM",
+  //   symbol: "MIM",
+  //   address: "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
+  //   img: "/assets/tokens/MIM.png",
+  //   decimals: 18
+  // },
+  // {
+  //   name: "alETH",
+  //   symbol: "alETH",
+  //   address: "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+  //   img: "/assets/tokens/alETH.png",
+  //   decimals: 18
+  // },
+
+
   // {
   //   name: "cDAI",
   //   symbol: "cDAI",
