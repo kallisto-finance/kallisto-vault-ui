@@ -17,10 +17,10 @@ const ManageLiquidity = ({ onBack, onWithdrawLiquidity, vaultInfo }) => {
           <span className="panel-title">My Pool Liquidity</span>
           <span className="panel-value">{`$${formatBalance(vaultInfo.userLiquidity)}`}</span>
           <div className="panel-buttons">
-            {/* <div className="panel-button" onClick={(e) => onBack()}>
+            <div className="panel-button" onClick={(e) => onBack()}>
               Add more Liquidity
               <img src="/assets/arrows/arrow-top-right.svg" />
-            </div> */}
+            </div>
             <div
               className="panel-button"
               onClick={(e) => onWithdrawLiquidity()}

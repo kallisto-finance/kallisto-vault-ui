@@ -71,6 +71,7 @@ const DepositConfirm = ({
               EDIT
             </Button>
           }
+          containerStyle={{textAlign: 'center'}}
         />
         <div className="view-subtitle">Your % of the Pool*</div>
         {calculating ? (
@@ -78,7 +79,7 @@ const DepositConfirm = ({
             <LoadingTriple />
           </div>
         ) : (
-          <AmountView value={`${expectedPoolShare} %`} />
+          <AmountView value={`${expectedPoolShare} %`} containerStyle={{textAlign: 'center'}} />
         )}
         <div className="view-help mt-2">
           <div className="view-help-text">*This rate is dynamic.</div>
