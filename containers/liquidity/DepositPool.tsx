@@ -80,7 +80,7 @@ const DepositPoolContent = (props) => {
           value={`$${formatBalance(vaultInfo.tvl)}`}
           className="mt-2"
         />
-        <div style={{ visibility: 'hidden' }}>
+        <div style={{ visibility: 'visible' }}>
           <div className="view-subtitle">
             Select a token and add more liquidity
           </div>
@@ -98,7 +98,7 @@ const DepositPoolContent = (props) => {
         </div>
       </div>
 
-      <div style={{ visibility: 'hidden' }}>
+      <div style={{ visibility: 'visible' }}>
         <DepositButton
           balance={depositAmount.value}
           maxBalance={selectedToken.balance}
